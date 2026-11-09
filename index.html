@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Диабетическая ретинопатия — симуляция одной болезни</title>
+<meta name="description" content="Симуляция одной болезни: диабетическая ретинопатия. Диабет по статистике, пять пауз, зрение, лазер и инъекции. Данные IDF, GBD и AAO.">
+<style>
+:root{
+  --bg:#0e1012; --bg2:#121518; --panel:#15181b; --line:#262b2f; --line2:#30363b;
+  --ink:#ece8e1; --dim:#9a968e; --dim2:#6f6c66;
+  --acc:#d96a4e; --acc2:#f0a08a; --green:#7f9d82; --warm:#c79a5c;
+  --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+  --sans:"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,select,input,textarea{font-family:inherit;font-size:inherit;color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+.kick{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);margin:0 0 18px}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:400;letter-spacing:-.01em;margin:0}
+em{font-style:italic;color:var(--acc2)}
+b,strong{font-weight:600}
+.small{font-size:13.5px}
+
+/* верхняя панель */
+.top{position:sticky;top:0;z-index:40;background:rgba(14,16,18,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;height:62px}
+.brand{display:flex;align-items:baseline;gap:12px}
+.brand .bn{font-family:var(--serif);font-size:19px;letter-spacing:.01em}
+.brand .bs{font-family:var(--sans);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim2)}
+.topright{display:flex;align-items:center;gap:22px}
+.top nav{display:flex;gap:22px;font-size:13px;color:var(--dim)}
+.top nav a:hover{color:var(--ink)}
+.lang{display:flex;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.lang button{background:none;border:0;border-right:1px solid var(--line);padding:5px 9px;font-size:10.5px;letter-spacing:.08em;color:var(--dim2);cursor:pointer}
+.lang button:last-child{border-right:0}
+.lang button.on{background:rgba(217,106,78,.15);color:#fff}
+
+/* обложка */
+.hero{padding:86px 0 56px;border-bottom:1px solid var(--line);background:
+  radial-gradient(1100px 460px at 12% -10%,rgba(217,106,78,.09),transparent 60%),
+  radial-gradient(800px 420px at 90% 0%,rgba(127,157,130,.06),transparent 60%)}
+.hero h1{font-size:clamp(64px,11vw,132px);line-height:.92;margin:0 0 30px;letter-spacing:-.03em}
+.hero h1 em{font-size:.92em}
+.hero .lead{max-width:760px;font-size:clamp(18px,2.1vw,22px);line-height:1.5;color:#d8d3ca;margin:0 0 18px}
+.hero .after{max-width:720px;color:var(--dim);margin:0 0 44px;font-size:15px}
+.counters{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden;max-width:900px}
+.counters div{background:var(--bg2);padding:20px 22px}
+.counters b{display:block;font-family:var(--serif);font-size:32px;font-weight:400;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.counters span{display:block;font-size:11.5px;line-height:1.45;color:var(--dim2);margin-top:4px}
+
+/* секции */
+section{padding:68px 0;border-bottom:1px solid var(--line)}
+.head{max-width:780px;margin-bottom:38px}
+.head h2{font-size:clamp(30px,3.6vw,42px);margin-bottom:12px}
+.head p{color:var(--dim);margin:0;font-size:15.5px;max-width:680px}
+
+/* настройка */
+.fields{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:22px;margin-bottom:22px}
+.fields.two{grid-template-columns:1fr 1fr}
+.fld label{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim2);margin-bottom:9px}
+.seg{display:flex;border:1px solid var(--line);border-radius:3px;overflow:hidden;background:var(--bg2)}
+.seg button{flex:1;padding:11px 8px;background:none;border:0;border-right:1px solid var(--line);font-size:13px;color:var(--dim);cursor:pointer;transition:.15s}
+.seg button:last-child{border-right:0}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:rgba(217,106,78,.14);color:#fff}
+select{width:100%;padding:11px 12px;background:var(--bg2);border:1px solid var(--line);border-radius:3px;font-size:13.5px;appearance:none;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--dim) 50%),linear-gradient(135deg,var(--dim) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 18px,calc(100% - 13px) 18px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+select:focus{outline:none;border-color:var(--acc)}
+.row{display:flex;justify-content:space-between;align-items:flex-end;gap:26px;flex-wrap:wrap;margin-top:30px}
+.toggles{display:flex;flex-direction:column;gap:10px}
+.tg{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--dim);cursor:pointer}
+.tg input{accent-color:var(--acc);width:15px;height:15px}
+.go{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;background:var(--acc);color:#160d09;border:1px solid var(--acc);border-radius:3px;font-size:14px;font-weight:600;cursor:pointer;transition:.15s}
+.btn:hover{background:#e97b5f;border-color:#e97b5f}
+.btn.ghost{background:none;border-color:var(--line2);color:var(--dim);font-weight:500}
+.btn.ghost:hover{color:var(--ink);border-color:var(--dim)}
+.micro{font-size:11.5px;color:var(--dim2);margin:16px 0 0;letter-spacing:.03em}
+
+/* как это устроено */
+.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:34px}
+.cards3 article{background:var(--bg2);padding:26px 24px}
+.cards3 h3{font-size:20px;margin-bottom:10px}
+.cards3 p{margin:0;color:var(--dim);font-size:14px}
+.prose{max-width:780px;color:#c9c4bb;font-size:15.5px}
+.prose p{margin:0 0 16px}
+.prose em{color:var(--acc2)}
+.prose b{color:var(--ink)}
+
+/* таблица стадий */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim2);font-weight:500;padding:0 16px 12px 0;border-bottom:1px solid var(--line2)}
+.tbl td{padding:15px 16px 15px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--dim)}
+.tbl td:first-child{color:var(--ink);font-family:var(--serif);font-size:16px;white-space:nowrap}
+.tbl td:last-child{color:#bdb8af}
+.tbl tr:hover td{background:rgba(255,255,255,.012)}
+.note{display:flex;gap:12px;margin-top:24px;padding:16px 18px;border-left:2px solid var(--warm);background:rgba(199,154,92,.05);font-size:13.5px;color:var(--dim)}
+.note b{color:var(--warm)}
+
+/* прошлые жизни */
+.past{display:none}
+.past.on{display:block}
+.past-head{display:flex;justify-content:space-between;align-items:baseline;gap:20px;margin-bottom:6px}
+.past-head h2{font-size:30px}
+.linkbtn{background:none;border:0;color:var(--dim2);font-size:12.5px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.linkbtn:hover{color:var(--ink)}
+#pastList{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px}
+#pastList div{background:var(--bg2);padding:14px 16px;display:grid;gap:3px;font-size:13px}
+#pastList b{font-weight:500;color:var(--ink)}
+#pastList span{color:var(--dim)}
+#pastList code{font-size:10.5px;color:var(--dim2);letter-spacing:.1em}
+
+/* помощь */
+.help{background:var(--bg2)}
+.help .box{border:1px solid var(--line);padding:30px;max-width:820px}
+.help h3{font-size:24px;margin-bottom:14px}
+.help p{color:var(--dim);font-size:14.5px;margin:0 0 14px}
+.help .lines{display:grid;gap:7px;font-size:14px;margin-top:18px}
+.help .lines b{color:var(--ink);font-weight:500}
+
+/* подвал */
+footer{padding:44px 0 56px;color:var(--dim2);font-size:12.5px}
+footer .wrap{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap}
+footer p{margin:0;max-width:720px;line-height:1.6}
+footer .fl{display:flex;gap:18px}
+
+/* симуляция */
+.sim{position:fixed;inset:0;z-index:100;background:var(--bg);display:none;grid-template-rows:auto auto 1fr auto;overflow:hidden}
+.sim.on{display:grid}
+.simbar{border-bottom:1px solid var(--line);background:rgba(14,16,18,.97)}
+.simbar .wrap{display:flex;align-items:center;gap:26px;padding:13px 28px}
+.simid{min-width:220px}
+.simid b{display:block;font-family:var(--serif);font-size:17px;font-weight:400}
+.simid span{display:block;font-size:11px;color:var(--dim2);letter-spacing:.06em;margin-top:2px}
+.meters{display:flex;gap:16px;flex:1}
+.meter{min-width:90px;flex:1}
+.meter>span{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--dim2);margin-bottom:5px}
+.meter span b{font-weight:400;font-size:11px;letter-spacing:0;color:var(--ink);font-variant-numeric:tabular-nums}
+.bar{height:2px;background:#24282c;border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .35s linear,background .5s}
+.meter.ctl .bar i{background:var(--green)}
+.meter.life .bar i{background:#c9c4bb}
+.agebox{text-align:right;min-width:120px}
+.year{display:flex;align-items:center;justify-content:flex-end;gap:8px;font-size:10.5px;color:var(--dim2);letter-spacing:.08em;font-variant-numeric:tabular-nums}
+.stage{font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--warm);border:1px solid rgba(199,154,92,.35);border-radius:20px;padding:2px 8px;white-space:nowrap}
+.age{display:flex;align-items:baseline;justify-content:flex-end;gap:6px;line-height:1}
+.age b{font-family:var(--serif);font-size:34px;font-weight:400;font-variant-numeric:tabular-nums}
+.age span{font-size:11px;color:var(--dim2)}
+
+.simbar2{border-bottom:1px solid var(--line);padding:8px 0}
+.simbar2 .wrap{display:flex;align-items:center;gap:14px;font-size:10.5px;color:var(--dim2);letter-spacing:.05em}
+.scrub{flex:1;height:1px;background:#24282c;position:relative}
+.scrub i{position:absolute;left:0;top:-1px;height:3px;width:0;background:var(--acc);transition:width .3s linear}
+#scrubR{white-space:nowrap}
+
+.feedwrap{overflow-y:auto;scroll-behavior:smooth}
+.feed{max-width:740px;margin:0 auto;padding:34px 28px 60px;display:flex;flex-direction:column;gap:2px}
+.ev{display:grid;grid-template-columns:96px 1fr;gap:18px;padding:11px 14px;border-radius:3px}
+.ev .m{font-size:10.5px;color:var(--dim2);letter-spacing:.04em;padding-top:3px;font-variant-numeric:tabular-nums}
+.ev p{margin:0;font-size:14.5px;color:#cfcbc4;line-height:1.62}
+.ev.big{background:rgba(255,255,255,.018);margin:8px 0;padding:16px 14px}
+.ev.big p{font-family:var(--serif);font-size:18px;line-height:1.5;color:#e7e2da}
+.ev.good p{color:#b9cbb9}
+.ev.bad p{color:#d8b6ab}
+.ev.note{grid-template-columns:1fr;padding:2px 14px 8px;opacity:.8}
+.ev.note p{font-size:12.5px;color:var(--dim);font-style:italic;padding-left:114px}
+.ev.note .m{display:none}
+
+.simctrl{display:flex;justify-content:center;align-items:center;gap:14px;padding:12px;border-top:1px solid var(--line);background:rgba(14,16,18,.97)}
+.simctrl .btn{padding:8px 16px;font-size:12.5px}
+.spdbox{display:flex;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.spd{background:none;border:0;border-right:1px solid var(--line);padding:8px 13px;font-size:12px;color:var(--dim2);cursor:pointer}
+.spd:last-child{border-right:0}
+.spd.on{background:rgba(217,106,78,.15);color:#fff}
+
+/* панель решений */
+.panel{position:fixed;inset:0;z-index:120;display:none;background:rgba(6,7,8,.74);backdrop-filter:blur(4px);overflow-y:auto;padding:34px 20px}
+.panel.on{display:block}
+.pcard{max-width:640px;margin:0 auto;background:var(--panel);border:1px solid var(--line2);padding:30px 30px 26px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.pcard .kick{margin-bottom:12px;font-size:10.5px}
+.pcard h3{font-size:28px;margin-bottom:12px}
+.pcard .pt{color:#cfcbc4;font-size:14.5px;margin:0 0 12px}
+.pcard .pn{color:var(--dim2);font-size:12.5px;margin:18px 0 0;line-height:1.55}
+.opts{display:grid;gap:8px;margin:20px 0 0}
+.opt{display:flex;align-items:flex-start;gap:14px;text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:3px;padding:13px 15px;cursor:pointer;transition:.13s;width:100%}
+.opt:hover{border-color:var(--acc);background:rgba(217,106,78,.07)}
+.opt .k{font-size:11px;color:var(--acc);border:1px solid rgba(217,106,78,.35);border-radius:2px;padding:2px 6px;min-width:22px;text-align:center;margin-top:1px}
+.opt .tx{display:grid;gap:3px}
+.opt strong{font-weight:500;font-size:14px;color:var(--ink)}
+.opt em{font-style:normal;font-size:12px;color:var(--dim)}
+.pcard .opts+.opts{margin-top:0}
+
+/* финал */
+.end{margin-top:26px;border-top:1px solid var(--line2);padding-top:30px}
+.end h2{font-size:clamp(38px,6vw,58px);line-height:1.02;margin-bottom:18px}
+.end .cause{font-size:15px;color:var(--dim);max-width:640px;margin:0 0 26px;line-height:1.6}
+.end h4{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim2);font-family:var(--sans);margin:34px 0 14px}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin:0 0 8px}
+.stat-row div{background:var(--bg2);padding:16px 18px}
+.stat-row b{display:block;font-family:var(--serif);font-size:34px;font-weight:400;line-height:1;font-variant-numeric:tabular-nums}
+.stat-row span{display:block;font-size:11px;color:var(--dim2);margin-top:5px}
+.neigh{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.neigh article{background:var(--bg2);padding:14px}
+.neigh h5{margin:0 0 4px;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--dim2);font-weight:500}
+.neigh p{margin:0 0 4px;font-size:12px;color:var(--dim)}
+.neigh .ag{font-family:var(--serif);font-size:22px;line-height:1.1;margin:6px 0 3px}
+.recap{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+.recap div{background:var(--bg2);display:flex;justify-content:space-between;gap:18px;padding:11px 15px;font-size:13px}
+.recap span{color:var(--dim2)}
+.recap b{font-weight:500;text-align:right;color:var(--ink)}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.facts div{background:var(--bg2);padding:15px 16px}
+.facts b{display:block;font-family:var(--serif);font-size:24px;font-weight:400;color:var(--warm);margin-bottom:3px}
+.facts span{font-size:11.5px;color:var(--dim);line-height:1.45}
+.words{width:100%;min-height:66px;background:var(--bg2);border:1px solid var(--line);border-radius:3px;padding:12px 14px;font-size:14px;color:var(--ink);resize:vertical}
+.words:focus{outline:none;border-color:var(--acc)}
+.end-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.end .help{margin-top:28px;border:1px solid var(--line);padding:16px 18px;background:rgba(199,154,92,.04);color:var(--dim);font-size:12.5px;line-height:1.6}
+.fineprint{font-size:11px;color:var(--dim2);line-height:1.6;margin-top:26px;border-top:1px solid var(--line);padding-top:16px}
+@media(max-width:960px){
+  .fields,.fields.two{grid-template-columns:1fr}
+  .counters{grid-template-columns:1fr}
+  .cards3{grid-template-columns:1fr}
+  .meters{display:none}
+  .brand .bs{display:none}
+  .neigh{grid-template-columns:1fr 1fr}
+  .facts{grid-template-columns:1fr}
+  .tbl{min-width:600px}
+  .ev{grid-template-columns:1fr}
+  .ev p{padding-left:2px}
+  .ev.note p{padding-left:2px}
+  .simctrl{gap:8px;flex-wrap:wrap}
+}
+@media(max-width:640px){
+  .top nav{display:none}
+  .hero{padding:58px 0 40px}
+  .row{flex-direction:column;align-items:stretch}
+  .go{flex-direction:column}
+  .neigh{grid-template-columns:1fr}
+  .stat-row{grid-template-columns:1fr 1fr 1fr}
+  .simbar .wrap{gap:12px;padding:10px 16px}
+  .simid{min-width:0}
+  .agebox{min-width:86px}
+  .feed{padding:24px 16px 50px}
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="wrap">
+    <a class="brand" href="#start"><span class="bn" data-i18n="brand">Один диагноз</span> <span class="bs" data-i18n="brandSub">диабетическая ретинопатия · v0.1 · 16+</span></a>
+    <div class="topright">
+      <nav>
+        <a href="#start" data-i18n="navStart">Начать</a>
+        <a href="#how" data-i18n="navHow">Как это устроено</a>
+        <a href="#stages" data-i18n="navStages">Этапы</a>
+        <a href="#help" data-i18n="navHelp">Помощь</a>
+      </nav>
+      <div class="lang" id="langSwitch" role="group" aria-label="Язык / Language">
+        <button type="button" data-lang="ru" class="on">RU</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="kick" data-i18n="heroKick">Симуляция одной болезни · реальная статистика · около 15 минут</p>
+    <h1><em>1</em> <span data-i18n="heroOf">из 4</span></h1>
+    <p class="lead" data-i18n-html="heroLead">Почти у каждого четвёртого взрослого с диабетом на сетчатке уже есть изменения. У каждого шестнадцатого они угрожают зрению. <b>Диабетическая ретинопатия</b> — главная причина предотвратимой слепоты у людей трудоспособного возраста.</p>
+    <p class="after" data-i18n="heroAfter">Здесь вы получаете диабет по статистике — тип, возраст, страну и контроль сахара — и проживаете его осложнение на сетчатке до конца. С паузами там, где жизнь действительно делает выбор.</p>
+    <div class="counters" data-i18n-aria="countersAria" aria-label="Счётчики в реальном времени">
+      <div><b id="c1">0</b><span data-i18n="c1label">прирост числа людей с диабетом в мире, пока вы читаете</span></div>
+      <div><b id="c2">0</b><span data-i18n="c2label">прирост числа людей с диабетической ретинопатией за это же время</span></div>
+      <div><b id="c3">0</b><span data-i18n="c3label">смертей, связанных с диабетом, за это же время</span></div>
+    </div>
+  </div>
+</header>
+
+<section class="setup" id="start">
+  <div class="wrap">
+    <div class="head">
+      <h2 data-i18n="setupH2">Если бы диабет нашли сейчас</h2>
+      <p data-i18n="setupSub">Тип, возраст и страну определяет статистика. Вы можете поменять пять вещей — и начать. Дальше всё решит не только выбор, но и доступ к помощи.</p>
+    </div>
+    <div class="fields">
+      <div class="fld">
+        <label data-i18n="sexLabel">Пол</label>
+        <div class="seg" id="segSex">
+          <button type="button" data-v="female" data-i18n="sexF">Женский</button>
+          <button type="button" data-v="male" data-i18n="sexM">Мужской</button>
+          <button type="button" data-v="random" data-i18n="sexR">Случайно</button>
+        </div>
+      </div>
+      <div class="fld">
+        <label data-i18n="ageLabel">Возраст начала диабета</label>
+        <div class="seg" id="segAge">
+          <button type="button" data-v="stat" data-i18n="ageStat">По статистике</button>
+          <button type="button" data-v="young" data-i18n="ageYoung">Молодой</button>
+          <button type="button" data-v="old" data-i18n="ageOld">Пожилой</button>
+        </div>
+      </div>
+      <div class="fld">
+        <label for="selCountry" data-i18n="countryLabel">Страна и доступ к помощи</label>
+        <select id="selCountry"></select>
+      </div>
+    </div>
+    <div class="fields two">
+      <div class="fld">
+        <label data-i18n="typeLabel">Тип диабета</label>
+        <div class="seg" id="segType">
+          <button type="button" data-v="t1" data-i18n="type1">1 тип</button>
+          <button type="button" data-v="t2" data-i18n="type2">2 тип</button>
+          <button type="button" data-v="random" data-i18n="typeRandom">Случайно</button>
+        </div>
+      </div>
+      <div class="fld">
+        <label for="selControl" data-i18n="controlLabel">Исходный контроль сахара</label>
+        <select id="selControl">
+          <option value="stat">По статистике — HbA1c около 8%</option>
+          <option value="good">Хороший — HbA1c около 6,5%</option>
+          <option value="poor">Плохой — HbA1c около 10%</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="toggles">
+        <label class="tg"><input type="checkbox" id="tgAuto"><span data-i18n="tgAuto">Авторежим — просто наблюдать</span></label>
+        <label class="tg"><input type="checkbox" id="tgSoft"><span data-i18n="tgSoft">Убрать тяжёлые сцены</span></label>
+        <label class="tg"><input type="checkbox" id="tgMusic"><span data-i18n="tgMusic">Тихая музыка</span></label>
+      </div>
+      <div class="go">
+        <button class="btn" id="btnStart" data-i18n="btnStart">Прожить эту болезнь</button>
+        <button class="btn ghost" id="btnRandom" data-i18n="btnRandom">Случайная жизнь</button>
+      </div>
+    </div>
+    <p class="micro" data-i18n="startMicro">5 пауз · ничего не отправляется на сервер · модель, а не прогноз</p>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="head">
+      <h2 data-i18n="howH2">Как это устроено</h2>
+      <p data-i18n="howSub">Одна жизнь с одним осложнением. Не игра в выбор — попытка прожить статистику изнутри.</p>
+    </div>
+    <div class="cards3">
+      <article>
+        <h3 data-i18n="how1t">Болезнь не выбирают</h3>
+        <p data-i18n="how1p">Тип диабета, возраст, страна и то, как долго сахар оставался высоким, — не выбор. Ретинопатия начинается тихо: часто через десять-пятнадцать лет после диагноза, а иногда — уже в момент, когда диабет только нашли.</p>
+      </article>
+      <article>
+        <h3 data-i18n="how2t">Пауза</h3>
+        <p data-i18n="how2p">В пяти местах время останавливается: первые изменения, обследование, лечение, близкие и работа, последний отрезок. Каждый выбор меняет зрение — но не отменяет статистику.</p>
+      </article>
+      <article>
+        <h3 data-i18n="how3t">Рядом идут другие</h3>
+        <p data-i18n="how3p">В тот же день такой же диагноз слышат тысячи людей. Четверо из них живут с той же болезнью в других странах — с другим доступом к офтальмологу, лазеру и уколам. Никто из них этого не выбирал.</p>
+      </article>
+    </div>
+    <div class="prose">
+      <p data-i18n="howP1">Диабетическая ретинопатия — не болезнь глаз в обычном смысле. Это повреждение мелких сосудов сетчатки высоким сахаром. Она годами не даёт симптомов, а когда даёт — часто уже поздно для простого наблюдения. Поэтому статистика здесь зависит не от силы воли, а от того, попал ли человек на осмотр с расширенным зрачком и есть ли в его стране лазер и инъекции.</p>
+      <p data-i18n-html="howP2">Всё, что происходит, — модель. Она построена на опубликованных оценках, но не предсказывает ничью конкретную жизнь. <em>Здесь нельзя ослепнуть от того, что вы «плохо играли»: можно только увидеть, как статистика распределяет шансы.</em> И одна из самых жестоких её частей: почти 90% случаев тяжёлой потери зрения при диабете предотвратимы — там, где есть скрининг и лечение.</p>
+    </div>
+  </div>
+</section>
+
+<section id="stages">
+  <div class="wrap">
+    <div class="head">
+      <h2 data-i18n="stagesH2">Этапы, через которые проходит сетчатка</h2>
+      <p data-i18n="stagesSub">Ретинопатия почти никогда не начинается со слепоты. Между первыми изменениями и потерей зрения — годы, в которые можно что-то сделать.</p>
+    </div>
+    <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th data-i18n="tblStage">Этап</th><th data-i18n="tblWhat">Что происходит</th><th data-i18n="tblDo">Что обычно делают</th></tr></thead>
+      <tbody>
+        <tr><td data-i18n="st1n">Нет изменений</td><td data-i18n="st1w">Сосуды сетчатки целы, симптомов нет.</td><td data-i18n="st1d">Осмотр раз в 1–2 года; при диабете 2 типа — сразу после диагноза.</td></tr>
+        <tr><td data-i18n="st2n">НПДР, лёгкая</td><td data-i18n="st2w">Микроаневризмы и единичные мелкие кровоизлияния.</td><td data-i18n="st2d">Контроль сахара и давления, наблюдение.</td></tr>
+        <tr><td data-i18n="st3n">НПДР, умеренная</td><td data-i18n="st3w">Кровоизлияний и экссудатов больше, сосуды страдают.</td><td data-i18n="st3d">Осмотр каждые 6–12 месяцев.</td></tr>
+        <tr><td data-i18n="st4n">НПДР, тяжёлая</td><td data-i18n="st4w">Сосуды близки к пролиферации, риск закрытия просвета.</td><td data-i18n="st4d">Лазер или наблюдение; отдельно лечат отёк в центре.</td></tr>
+        <tr><td data-i18n="st5n">ПДР</td><td data-i18n="st5w">На сетчатке растут новые хрупкие сосуды: риск кровоизлияния и отслойки.</td><td data-i18n="st5d">Панретинальный лазер, инъекции, витрэктомия.</td></tr>
+        <tr><td data-i18n="st6n">ДМО</td><td data-i18n="st6w">Отёк в центре сетчатки — там, где чтение, лица и дорога.</td><td data-i18n="st6d">Инъекции анти-VEGF; лазер при некоторых формах.</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="note"><span>!</span><p data-i18n-html="stagesNote"><b>Диабетический макулярный отёк может возникнуть на любой стадии.</b> Зрение падает не от самой ретинопатии, а от отёка, кровоизлияния или отслойки. Именно поэтому осмотр нужен даже тогда, когда «всё видно».</p></div>
+  </div>
+</section>
+
+<section class="past" id="pastBox">
+  <div class="wrap">
+    <div class="past-head"><h2 data-i18n="pastH2">Прожитые здесь жизни</h2><button class="linkbtn" id="btnClearLives" data-i18n="pastClear">Очистить</button></div>
+    <p class="small" style="color:var(--dim);margin:0" data-i18n="pastSub">Сохраняются только в этом браузере.</p>
+    <div id="pastList"></div>
+  </div>
+</section>
+
+<section class="help" id="help">
+  <div class="wrap">
+    <div class="head">
+      <h2 data-i18n="helpH2">Тяжёлые темы</h2>
+      <p data-i18n="helpSub">Здесь теряют зрение. Так же часто, как в реальной статистике.</p>
+    </div>
+    <div class="box">
+      <h3 data-i18n="helpH3">Это может быть тяжело — и это нормально</h3>
+      <p data-i18n="helpP1">В симуляции есть слепота, страх, долги и отчаяние. Сцены не показываются подробно, а флажок «Убрать тяжёлые сцены» смягчает формулировки. Если вам сейчас тяжело, симуляция может подождать.</p>
+      <p data-i18n="helpP2">Потеря зрения — не приговор и не конец: есть реабилитация, тифлотехника и сообщества людей, которые через это прошли. Но если вы думаете о том, чтобы причинить себе вред, или просто больше не справляетесь, — это не то, что нужно переживать в одиночку.</p>
+      <div class="lines">
+        <div data-i18n-html="helpL1"><b>Россия:</b> 8-800-2000-122 — бесплатно, круглосуточно</div>
+        <div data-i18n-html="helpL2"><b>Экстренно:</b> 112</div>
+        <div data-i18n-html="helpL3"><b>Мир:</b> findahelpline.com — линии помощи в 130+ странах</div>
+        <div data-i18n-html="helpL4"><b>Не один:</b> скажите вслух близкому человеку</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p data-i18n="footP">«Один диагноз: ретинопатия» — симуляция одного осложнения диабета. Цифры: IDF Diabetes Atlas 2021, метаанализ распространённости ДР (Ophthalmology, 2021), GBD / Vision Loss Expert Group, AAO Preferred Practice Pattern 2024, UKPDS. Модель течения болезни — упрощение, а не прогноз.</p>
+    <div class="fl"><span data-i18n="footNoServer">Ничего не отправляется на сервер</span><span>16+</span></div>
+  </div>
+</footer>
+
+<div class="sim" id="sim" role="dialog" aria-modal="true" aria-label="Симуляция диабетической ретинопатии" data-i18n-aria="simAria">
+  <div class="simbar">
+    <div class="wrap">
+      <div class="simid"><b id="simDisease">Диабетическая ретинопатия</b><span id="simPerson">—</span></div>
+      <div class="meters">
+        <div class="meter vis"><span><span data-i18n="meterVision">Зрение</span> <b id="visNum">1,0</b></span><div class="bar"><i id="mVis"></i></div></div>
+        <div class="meter ctl"><span data-i18n="meterControl">Контроль</span><div class="bar"><i id="mCtl"></i></div></div>
+        <div class="meter life"><span data-i18n="meterLife">Жизнь</span><div class="bar"><i id="mLife"></i></div></div>
+      </div>
+      <div class="agebox">
+        <div class="year"><span id="simYear">2026</span><span class="stage" id="simStage">НПДР</span></div>
+        <div class="age"><b id="simAge">52</b><span id="simAgeWord">года</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="simbar2"><div class="wrap"><span id="scrubL">ДР в 52</span><div class="scrub"><i id="simBar"></i></div><span id="scrubR">20 лет с диагнозом</span></div></div>
+  <div class="feedwrap"><div class="feed" id="feed"></div></div>
+  <div class="simctrl">
+    <button class="btn" id="btnPause">Пауза</button>
+    <div class="spdbox">
+      <button class="spd on" data-spd="1">1×</button>
+      <button class="spd" data-spd="2">2×</button>
+      <button class="spd" data-spd="4">4×</button>
+    </div>
+    <button class="btn ghost" id="btnExit" data-i18n="exitBtn">Выйти</button>
+  </div>
+  <div class="panel" id="panel"><div class="pcard" id="panelCard"></div></div>
+</div>
+
+<script>
+/* =====================================================================
+   ОДИН ДИАГНОЗ: ДИАБЕТИЧЕСКАЯ РЕТИНОПАТИЯ
+   Модель, а не прогноз. Одна болезнь, пять пауз, зрение как главный счёт.
+   ===================================================================== */
+const LS_LANG = 'dr.lang.v1';
+function detectLang() {
+  const list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ''];
+  for (const tag of list) {
+    const t = String(tag).toLowerCase();
+    if (t.indexOf('ru') === 0) return 'ru';
+    if (t.indexOf('en') === 0) return 'en';
+  }
+  return 'en';
+}
+let L = 'ru';
+try {
+  const v = localStorage.getItem(LS_LANG);
+  L = (v === 'en' || v === 'ru') ? v : detectLang();
+} catch (e) { L = detectLang(); }
+const S = (ru, en) => L === 'en' ? en : ru;
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a = 0, b = 100) => Math.max(a, Math.min(b, v));
+const clamp01 = v => clamp(v, 0, 1);
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const rnd = (r, a, b) => a + (b - a) * r();
+const pick = (r, arr) => arr[Math.min(arr.length - 1, Math.floor(r() * arr.length))];
+function tri(r, a, m, b) {
+  const u = r();
+  return u < .5 ? a + (m - a) * Math.sqrt(2 * u) : b - (b - m) * Math.sqrt(2 * (1 - u));
+}
+function plural(n, one, few, many) {
+  const a = Math.abs(n) % 100, b = a % 10;
+  if (a > 10 && a < 20) return many;
+  if (b > 1 && b < 5) return few;
+  if (b === 1) return one;
+  return many;
+}
+const ageWord = n => L === 'en' ? (Math.round(n) === 1 ? 'year' : 'years') : plural(Math.round(n), 'год', 'года', 'лет');
+const yrs = n => { n = Math.max(0, Math.round(n)); return n + ' ' + ageWord(n); };
+const fmtInt = n => new Intl.NumberFormat(L === 'en' ? 'en-US' : 'ru-RU').format(Math.max(0, Math.floor(n)));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const NOW_YEAR = 2026;
+const RATE = 0.036;
+
+const COUNTRIES = [
+  {id:'ru', name:'Россия',        access:.62, oop:.45, life:73},
+  {id:'by', name:'Беларусь',      access:.58, oop:.38, life:74},
+  {id:'de', name:'Германия',      access:.95, oop:.12, life:81},
+  {id:'us', name:'США',           access:.86, oop:.92, life:79},
+  {id:'gb', name:'Великобритания',access:.93, oop:.15, life:81},
+  {id:'fr', name:'Франция',       access:.94, oop:.18, life:82},
+  {id:'jp', name:'Япония',        access:.95, oop:.25, life:84},
+  {id:'pl', name:'Польша',        access:.76, oop:.30, life:77},
+  {id:'br', name:'Бразилия',      access:.55, oop:.55, life:76},
+  {id:'cn', name:'Китай',         access:.68, oop:.45, life:78},
+  {id:'in', name:'Индия',         access:.35, oop:.75, life:70},
+  {id:'id', name:'Индонезия',     access:.32, oop:.70, life:71},
+  {id:'mx', name:'Мексика',       access:.50, oop:.55, life:75},
+  {id:'eg', name:'Египет',        access:.40, oop:.65, life:72},
+  {id:'ke', name:'Кения',         access:.25, oop:.80, life:66},
+  {id:'za', name:'ЮАР',           access:.45, oop:.60, life:64},
+  {id:'ng', name:'Нигерия',       access:.20, oop:.90, life:55}
+];
+
+const DIS = {
+  name: 'Диабетическая ретинопатия',
+  group: 'Глаза · осложнение диабета',
+  tagline: 'Сахарный диабет бьёт по самым мелким сосудам. Сетчатка — единственное место, где это видно без разреза.',
+  facts: [
+    ['103 млн', 'взрослых в мире живут с диабетической ретинопатией — почти каждый четвёртый с диабетом (2020)'],
+    ['28,5 млн', 'из них — с формой, которая угрожает зрению'],
+    ['≈90 %', 'случаев тяжёлой потери зрения можно предотвратить ранним выявлением и лечением'],
+    ['37 %', 'на столько снижается риск микрососудистых осложнений при снижении HbA1c на один процентный пункт (UKPDS)']
+  ],
+  help: true
+};
+
+const STAGE_RU = ['нет изменений', 'НПДР, лёгкая', 'НПДР, умеренная', 'НПДР, тяжёлая', 'ПДР'];
+const STAGE_EN = ['no changes', 'NPDR, mild', 'NPDR, moderate', 'NPDR, severe', 'PDR'];
+const stageNameOf = n => (L === 'en' ? STAGE_EN : STAGE_RU)[n];
+
+const FACTS_EN = [
+  ['103 m', 'adults worldwide live with diabetic retinopathy — almost one in four people with diabetes (2020)'],
+  ['28.5 m', 'of them have a form that threatens sight'],
+  ['≈90%', 'of cases of severe sight loss can be prevented by early detection and treatment'],
+  ['37%', 'lower risk of microvascular complications for each one-point drop in HbA1c (UKPDS)']
+];
+const facts = () => L === 'en' ? FACTS_EN : DIS.facts;
+
+const GEN = {
+  calm: [
+    'Год проходит без кровоизлияний. Вы почти перестаёте думать о глазах.',
+    'Вы читаете книгу с лупой — медленно, но читаете.',
+    'Дочь присылает фотографии внуков. Вы подносите телефон к самому лицу и разглядываете.',
+    'Очередь в поликлинике. Разговоры о погоде, о ценах, о чьей-то даче.',
+    'Вы наконец записываетесь на курсы, о которых думали два года.',
+    'Утро без спешки. Кофе, радио, привычный маршрут до работы.',
+    'Вы покупаете новые очки. Врач говорит, что для ваших глаз это неплохо.',
+    'Отпуск. Вы впервые за долгое время не берёте с собой капли.'
+  ],
+  bad: [
+    'Утром в глазу — плавающая тёмная паутина. К обеду она оседает, но не исчезает.',
+    'Сахар 12. Вы обещаете себе взяться за себя — с понедельника.',
+    'Офтальмолог хмурится и назначает осмотр через три месяца вместо года.',
+    'Вы забываете капли. Вспоминаете через неделю.',
+    'Ночью вы не спите: в темноте перед глазами вспышки.',
+    'Вы выходите из дома и понимаете, что не видите номер автобуса, пока он не подъедет вплотную.',
+    'Разговор с врачом заканчивается словом «наблюдаем». Вы киваете и не спрашиваете, что это значит.'
+  ],
+  money: [
+    'Инъекция стоит как половина зарплаты. Врач говорит: «Раз в месяц».',
+    'Страховка покрывает лазер, но не уколы. Разницу вы платите сами.',
+    'Вы отказываетесь от поездки, чтобы оплатить курс.'
+  ],
+  close: [
+    'Жена читает вам вслух инструкцию к каплям. Вы делаете вид, что и так помните.',
+    'Друг приходит и просто сидит рядом. Это лучший визит за месяц.',
+    'Сын вызывает вам такси до клиники и не спрашивает, как прошло.'
+  ],
+  sight: [
+    'Вы перестаёте узнавать знакомых издалека. Теперь вы здороваетесь первым — со всеми.',
+    'Табличка на двери стала белым пятном. Вы считаете двери.',
+    'Вы просите официанта прочитать меню вслух.',
+    'В кино вы больше не понимаете, что происходит в темноте.',
+    'Вы учитесь ходить по квартире, не включая свет: так проще, когда его всё равно мало.'
+  ]
+};
+
+const GEN_EN = {
+  calm: [
+    'A year passes without a haemorrhage. You almost stop thinking about your eyes.',
+    'You read a book with a magnifier — slowly, but you read.',
+    'Your daughter sends photos of the grandchildren. You hold the phone close to your face and study them.',
+    'The queue at the clinic. Talk about the weather, prices, someone’s allotment.',
+    'You finally sign up for the course you have been thinking about for two years.',
+    'A morning without hurry. Coffee, the radio, the usual route to work.',
+    'You buy new glasses. The doctor says that, for your eyes, this is not bad.',
+    'A holiday. For the first time in a long while you do not take eye drops with you.'
+  ],
+  bad: [
+    'In the morning there is a floating dark web in your eye. By midday it settles, but does not disappear.',
+    'Glucose 12. You promise yourself to get a grip — from Monday.',
+    'The ophthalmologist frowns and schedules the next exam in three months instead of a year.',
+    'You forget the drops. You remember a week later.',
+    'You lie awake at night: in the dark there are flashes before your eyes.',
+    'You leave the house and realise you cannot read the bus number until it is almost at the stop.',
+    'The conversation with the doctor ends with the word “observe”. You nod and do not ask what it means.'
+  ],
+  money: [
+    'An injection costs half a month’s pay. The doctor says: “Once a month.”',
+    'Insurance covers the laser but not the injections. You pay the difference yourself.',
+    'You give up a trip to pay for a course of treatment.'
+  ],
+  close: [
+    'Your wife reads the eye-drop instructions aloud to you. You pretend you remember them.',
+    'A friend comes and simply sits beside you. It is the best visit in a month.',
+    'Your son calls you a taxi to the clinic and does not ask how it went.'
+  ],
+  sight: [
+    'You stop recognising people from a distance. Now you greet everyone first.',
+    'The sign on the door has become a white blur. You count doors.',
+    'You ask the waiter to read the menu aloud.',
+    'At the cinema you no longer understand what is happening in the dark.',
+    'You learn to walk around the flat without turning on the light: it is easier when there is so little of it anyway.'
+  ]
+};
+
+function gen() { return L === 'en' ? GEN_EN : GEN; }
+
+function acuity(v) {
+  const d = L === 'en' ? '.' : ',';
+  if (v >= 97) return '1' + d + '0';
+  if (v >= 88) return '0' + d + '8';
+  if (v >= 75) return '0' + d + '6';
+  if (v >= 60) return '0' + d + '4';
+  if (v >= 45) return '0' + d + '3';
+  if (v >= 32) return '0' + d + '2';
+  if (v >= 22) return '0' + d + '1';
+  if (v >= 12) return '0' + d + '05';
+  if (v >= 4) return L === 'en' ? 'light' : 'свет';
+  return '0';
+}
+
+function accessWord(a) {
+  if (L === 'en') return a > .8 ? 'high' : a > .55 ? 'moderate' : a > .35 ? 'low' : 'almost none';
+  return a > .8 ? 'высокий' : a > .55 ? 'средний' : a > .35 ? 'низкий' : 'почти никакой';
+}
+
+const EN_COUNTRY = {
+  ru: 'Russia', by: 'Belarus', de: 'Germany', us: 'USA', gb: 'United Kingdom', fr: 'France',
+  jp: 'Japan', pl: 'Poland', br: 'Brazil', cn: 'China', in: 'India', id: 'Indonesia',
+  mx: 'Mexico', eg: 'Egypt', ke: 'Kenya', za: 'South Africa', ng: 'Nigeria'
+};
+const RU_COUNTRY = {};
+COUNTRIES.forEach(c => { RU_COUNTRY[c.id] = c.name; });
+const countryName = c => L === 'en' ? (EN_COUNTRY[c.id] || c.name) : RU_COUNTRY[c.id];
+const sexWord = sex => L === 'en' ? (sex === 'female' ? 'female' : 'male') : (sex === 'female' ? 'женщина' : 'мужчина');
+const typeWord = type => L === 'en' ? (type === 't1' ? 'Type 1 diabetes' : 'Type 2 diabetes') : (type === 't1' ? 'Диабет первого типа' : 'Диабет второго типа');
+const typeShort = type => L === 'en' ? (type === 't1' ? 'type 1' : 'type 2') : (type === 't1' ? '1 тип' : '2 тип');
+const dname = () => S('Диабетическая ретинопатия', 'Diabetic retinopathy');
+const dgroup = () => S('Глаза · осложнение диабета', 'Eyes · a complication of diabetes');
+const tagline = () => S('Сахарный диабет бьёт по самым мелким сосудам. Сетчатка — единственное место, где это видно без разреза.', 'Diabetes strikes the smallest vessels. The retina is the one place where that damage can be seen without a scalpel.');
+
+class Life {
+  constructor(o) {
+    this.d = DIS;
+    this.country = o.country;
+    this.sex = o.sex;
+    this.onset = o.onset;
+    this.type = o.type;
+    this.controlBase = o.controlBase;
+    this.seed = o.seed >>> 0;
+    this.rng = mulberry32(this.seed);
+    this.auto = !!o.auto;
+    this.soft = !!o.soft;
+    this.access = clamp01(this.country.access);
+    this.latency = Math.max(.6, this.type === 't1' ? rnd(this.rng, 6, 16) : rnd(this.rng, 0, 7));
+    this.drAge = Math.max(6, Math.min(this.country.life - 3, Math.round(this.onset + this.latency)));
+    this.endT = rnd(this.rng, 19, 28);
+    this.s = {
+      t: 0, prog: .05, control: .2, quality: 66, money: 50, vision: 100,
+      adherence: .35, treated: false, dme: false, injections: false, laser: false,
+      disclosed: false, debt: false, blind: false, delay: .3
+    };
+    this.s.quality = Math.round(clamp(66 + this.access * 16, 0, 100));
+    this.s.money = Math.round(clamp(34 + this.access * 44 + rnd(this.rng, -6, 6), 0, 100));
+    this.events = [];
+    this.choices = [];
+    this.queue = [];
+    this.pending = null;
+    this.decCount = 0;
+    this.nextYear = 1;
+    this.used = new Set();
+    this.done = false;
+    this.dmg = 1;
+    this.blindAt = null;
+    this.endAge = null;
+    this.outcomeKind = 'kept';
+    this.hadLast = false;
+    this.marks = {};
+  }
+
+  get control() {
+    return clamp01(this.controlBase + (this.s.treated ? .16 * this.s.adherence : 0) + this.access * .06 + (this.s.disclosed ? .03 : 0));
+  }
+  get stageNum() {
+    const p = this.s.prog;
+    return p < .15 ? 1 : p < .35 ? 2 : p < .6 ? 3 : 4;
+  }
+  get stageName() { return stageNameOf(this.stageNum); }
+  get mode() { return this.s.dme ? 'dme' : (this.stageNum >= 4 ? 'pdr' : 'npdr'); }
+  get cu() { return .5 + this.country.oop; }
+
+  push(kind, text) {
+    this.events.push({ t: this.s.t, age: Math.max(0, Math.round(this.drAge + this.s.t)), kind, text });
+  }
+  schedule(id, t) {
+    this.decCount += 1;
+    this.queue.push({ id, n: this.decCount, t: Math.max(t, this.s.t + .02) });
+    this.queue.sort((a, b) => a.t - b.t);
+    this.pending = this.queue[0] || null;
+  }
+
+  diabetesLine() {
+    if (this.type === 't1') {
+      return S(
+        `Вам ${yrs(this.onset)}. Неделю вы пьёте воду стаканами и худеете без причины. Анализ крови: сахар 19. Врач говорит: «Диабет первого типа. Инсулин — каждый день, пожизненно».`,
+        `You are ${yrs(this.onset)}. For a week you have been drinking glass after glass and losing weight for no reason. A blood test: glucose 19. The doctor says: “Type 1 diabetes. Insulin — every day, for life.”`
+      );
+    }
+    return S(
+      `Вам ${yrs(this.onset)}. Сахар на диспансеризации — 11,8. Врач говорит: «Диабет второго типа. Начнём с таблеток и диеты», — и вы решаете, что это не про глаза.`,
+      `You are ${yrs(this.onset)}. A routine blood test shows glucose 11.8. The doctor says: “Type 2 diabetes. We will start with tablets and diet” — and you decide this has nothing to do with your eyes.`
+    );
+  }
+
+  yearsLine() {
+    const n = Math.max(1, Math.round(this.latency));
+    if (this.latency < 1.5) return S('Диабет нашли недавно — и сразу направили к офтальмологу. При втором типе изменения на сетчатке иногда есть уже к моменту диагноза.', 'Diabetes was found recently — and you were sent to an ophthalmologist at once. In type 2, retinal changes are sometimes already there at diagnosis.');
+    if (this.type === 't1') return S(`${yrs(n)} вы живёте с диабетом первого типа. Инсулин, глюкометр, подсчёт хлебных единиц. Глаза проверяли в последний раз года три назад — «пока ничего не беспокоило».`, `You have lived with type 1 diabetes for ${yrs(n)}. Insulin, a glucose meter, counting carbohydrates. You last had your eyes checked about three years ago — “nothing was bothering me”.`);
+    return S(`${yrs(n)} вы живёте с диабетом второго типа. Таблетки, диета, глюкометр через день. Когда вы последний раз проверяли глаза, вы уже не помните.`, `You have lived with type 2 diabetes for ${yrs(n)}. Tablets, diet, a glucose meter every other day. When you last had your eyes checked, you no longer remember.`);
+  }
+
+  diagText() {
+    let base;
+    const st = this.stageNum;
+    if (st >= 4) base = S('На снимке видны новые сосуды на сетчатке — тонкие, извитые, хрупкие. «Это пролиферативная диабетическая ретинопатия», — говорит врач.', 'New vessels are visible on the retina — thin, twisted, fragile. “This is proliferative diabetic retinopathy,” the doctor says.');
+    else if (st === 3) base = S('«Тяжёлая непролиферативная стадия, — говорит врач. — Рядом с ней всегда ходит пролиферативная. Смотреть нужно чаще».', '“Severe non-proliferative stage,” the doctor says. “Proliferative disease is always close behind it. We need to look more often.”');
+    else base = S('«Диабетическая ретинопатия, непролиферативная стадия, — говорит врач. — Пока без новых сосудов. Это хорошая новость».', '“Diabetic retinopathy, non-proliferative stage,” the doctor says. “No new vessels yet. That is good news.”');
+    if (this.s.dme) base += S(' В центре сетчатки — отёк. «Диабетический макулярный отёк. Именно он чаще всего забирает зрение», — добавляет врач.', ' There is swelling in the centre of the retina. “Diabetic macular oedema. That is what most often takes sight,” the doctor adds.');
+    return base;
+  }
+
+  start() {
+    this.push('big', this.diabetesLine());
+    this.push('calm', this.yearsLine());
+    this.push('big', S('Плановый осмотр у офтальмолога. Вам капают капли, двадцать минут вы ждёте в коридоре, потом врач светит в глаз яркой лампой и долго молчит. «На сетчатке есть изменения», — говорит он наконец.', 'A routine appointment with the ophthalmologist. They put drops in your eyes, you wait twenty minutes in the corridor, then the doctor shines a bright lamp into your eye and is silent for a long time. “There are changes in the retina,” he says at last.'));
+    this.schedule('screen', .04);
+    this.update();
+  }
+
+  update() {
+    const s = this.s;
+    s.control = this.control;
+    s.quality = clamp(Math.round(28 + s.vision * .5 - (s.money < 25 ? 12 : 0) + (s.disclosed ? 6 : 0) + (s.adherence > .7 ? 4 : 0)), 4, 100);
+  }
+
+  take(list) {
+    const free = list.filter(x => !this.used.has(x));
+    if (!free.length) { list.forEach(x => this.used.delete(x)); return pick(this.rng, list); }
+    const t = pick(this.rng, free); this.used.add(t); return t;
+  }
+
+  stageLine(n) {
+    if (n === 2) return S('Врач говорит, что изменения стали умеренными. Слово «пока» больше не звучит.', 'The doctor says the changes have become moderate. The word “for now” is no longer used.');
+    if (n === 3) return S('Снимок показывает тяжёлую непролиферативную стадию. До пролиферативной — один шаг.', 'The scan shows a severe non-proliferative stage. Proliferative disease is one step away.');
+    return S('На сетчатке выросли новые сосуды. Это пролиферативная стадия: они хрупкие и могут кровоточить.', 'New vessels have grown on the retina. This is the proliferative stage: they are fragile and can bleed.');
+  }
+
+  beatLine() {
+    if (this.s.injections) return this.take(S([
+      'Инъекция в глаз занимает меньше минуты. Вы считаете до десяти и не чувствуете, как игла входит.',
+      'После укола весь день плавают тёмные точки. К вечеру они оседают.',
+      'В холодильнике — коробка с лекарством, рядом с молоком. Так проще не забыть.'
+    ], [
+      'An injection into the eye takes less than a minute. You count to ten and do not feel the needle go in.',
+      'After the injection dark spots float all day. By evening they settle.',
+      'There is a box of medicine in the fridge, next to the milk. That way it is harder to forget.'
+    ]));
+    if (this.s.laser) return this.take(S([
+      'После лазера в глазах вспышки. Врач говорит, что это нормально.',
+      'Периферию зрения вы больше не видите. Зато центр пока держится.',
+      'Вы носите тёмные очки на улице: после лазера свет режет глаза.'
+    ], [
+      'After the laser there are flashes in your eyes. The doctor says this is normal.',
+      'You no longer see the periphery. The centre is still holding.',
+      'You wear dark glasses outside: after the laser, light cuts into your eyes.'
+    ]));
+    return this.take(S([
+      'Вы читаете по одной строчке, водя пальцем. Раньше это казалось смешным.',
+      'Вы перестали водить машину ночью. Потом — вообще. Никто не спрашивает почему.',
+      'Вы узнаёте людей по голосу и походке.',
+      'В аптеке вы просите упаковку с крупным шрифтом. Провизор кивает без вопросов.'
+    ], [
+      'You read one line at a time, running your finger along it. It used to seem funny.',
+      'You stopped driving at night. Then at all. No one asks why.',
+      'You recognise people by their voice and the way they walk.',
+      'At the pharmacy you ask for the large-print package. The pharmacist nods without questions.'
+    ]));
+  }
+
+  visionMarks() {
+    const v = this.s.vision, m = this.marks;
+    if (v < 70 && !m.v70) { m.v70 = 1; this.push('bad', S('Вы больше не читаете мелкий шрифт. Инструкции, цены, номера — всё приходится приближать.', 'You can no longer read small print. Instructions, prices, numbers — everything has to be brought closer.')); }
+    if (v < 45 && !m.v45) { m.v45 = 1; this.push('bad', S('Вы перестаёте узнавать лица в толпе. Здороваетесь первым — со всеми.', 'You stop recognising faces in a crowd. You greet everyone first.')); }
+    if (v < 25 && !m.v25) { m.v25 = 1; this.push('bad', S('Вы видите только крупные предметы и свет. Врач говорит слово «слабовидение».', 'You see only large objects and light. The doctor says the word “low vision”.')); }
+  }
+
+  yearly() {
+    if (this.done) return;
+    const s = this.s;
+    s.control = this.control;
+    const before = this.stageNum;
+    const accessFactor = 1.18 - .5 * this.access;
+    const step = (1 / 24) * (1.6 - s.control) * (this.type === 't1' ? 1.06 : 1) * (s.laser ? .65 : 1) * accessFactor * this.dmg;
+    s.prog = clamp01(s.prog + Math.max(.004, step));
+    const after = this.stageNum;
+    if (after > before) this.push('bad', this.stageLine(after));
+
+    if (!s.dme && this.rng() < .05 * (1.8 - s.control) * (after >= 2 ? 1.4 : .7)) {
+      s.dme = true;
+      this.push('bad', S('В правом глазу появляется мутное пятно в центре. Буквы расплываются, хотя очки не помогают.', 'A cloudy spot appears in the centre of your right eye. Letters blur, and glasses do not help.'));
+    }
+
+    if (after >= 4 && this.rng() < .12 * (s.laser ? .4 : 1) * (1.5 - s.control)) {
+      const hit = rnd(this.rng, 8, 24);
+      s.vision = clamp(s.vision - hit, 0, 100);
+      this.push('bad', S(
+        this.soft ? 'Утром зрение резко падает: в глазу кровоизлияние. Часть поля зрения закрыта.' : 'Ночью в глазу лопается сосуд. Утром вы видите сквозь тёмную пелену, как сквозь грязное стекло.',
+        this.soft ? 'In the morning your sight drops sharply: there is a haemorrhage in the eye. Part of your field of view is closed.' : 'In the night a vessel bursts in your eye. In the morning you see through a dark curtain, as if through dirty glass.'
+      ));
+      if (hit > 13 && this.access > .5 && this.rng() < .55) {
+        this.push('calm', S('Витрэктомия: хирург убирает кровь из стекловидного тела. Через месяц часть зрения возвращается.', 'Vitrectomy: the surgeon removes the blood from the vitreous. A month later part of your sight returns.'));
+        s.vision = clamp(s.vision + rnd(this.rng, 5, 14), 0, 100);
+      }
+    }
+
+    let loss = 0;
+    if (after >= 2) loss += (after - 1) * .42 * (1.45 - s.control);
+    if (s.dme) loss += (s.injections && s.adherence > .5 && this.access > .35) ? .8 : 4.0;
+    if (after >= 4) loss += s.laser ? .5 : 1.2;
+    s.vision = clamp(s.vision - loss * accessFactor * this.dmg, 0, 100);
+    this.visionMarks();
+
+    if (this.s.money < 25 && !this.marks.m25) {
+      this.marks.m25 = 1;
+      this.push('bad', this.take(gen().money));
+      s.debt = true;
+    }
+
+    if (s.vision < 55 && this.rng() < .35) this.push('calm', this.take(gen().sight));
+    else if (this.rng() < .6) this.push('calm', this.take([...gen().calm, this.beatLine()]));
+
+    if (!s.blind && s.vision <= 5) {
+      s.blind = true;
+      this.blindAt = s.t;
+      this.push('big', S(this.soft ? 'Вы больше не видите лиц. Мир стал другим.' : 'Вы больше не видите лиц. Только свет и тени, если повезёт.', this.soft ? 'You no longer see faces. The world has become different.' : 'You no longer see faces. Only light and shadows, if you are lucky.'));
+      this.endT = Math.min(Math.max(this.endT, s.t + 4), s.t + 9);
+      if (!this.hadLast) {
+        const q = this.queue.find(x => x.id === 'last');
+        if (!q) this.schedule('last', s.t + .8);
+        else if (q.t > s.t + 1.2) {
+          q.t = s.t + .8;
+          this.queue.sort((a, b) => a.t - b.t);
+          this.pending = this.queue[0] || null;
+        }
+      }
+    }
+    this.update();
+  }
+
+  advance(dt) {
+    if (this.done) return;
+    let guard = 0;
+    while (this.auto && this.pending && this.s.t >= this.pending.t - 1e-9 && guard++ < 8) {
+      this.resolve(this.pending.id, this.policy(this.pending.id));
+    }
+    if (!this.auto && this.pending && this.s.t >= this.pending.t - 1e-9) return;
+    this.s.t += dt;
+    this.update();
+    while (this.s.t + 1e-9 >= this.nextYear) {
+      this.nextYear += 1;
+      this.yearly();
+      if (this.done) return;
+    }
+    if (this.s.t >= this.endT) this.finish();
+  }
+
+  finish() {
+    this.done = true;
+    this.pending = null;
+    this.queue = [];
+    const v = this.s.vision;
+    this.outcomeKind = v < 6 ? 'blind' : v < 30 ? 'severe' : v < 60 ? 'low' : 'kept';
+    this.endAge = Math.round(this.drAge + this.s.t);
+  }
+
+  policy(id) {
+    const a = this.access, r = this.rng();
+    if (id === 'screen') return r < .2 + .6 * a ? 0 : (r < .85 ? 1 : 2);
+    if (id === 'tests') return r < .3 + .55 * a ? 0 : (r < .85 ? 1 : 2);
+    if (id === 'treat') {
+      if (this.mode === 'npdr') return r < .4 + .45 * a ? 0 : 1;
+      return r < .3 + .55 * a ? 0 : (r < .75 ? 1 : 2);
+    }
+    if (id === 'disclose') return r < .25 + .45 * a ? 0 : (r < .8 ? 2 : 1);
+    return this.s.vision < 45 ? (r < .55 ? 0 : 1) : (r < .45 + .3 * a ? 0 : 1);
+  }
+}
+
+function decisionDef(life, id) {
+  const s = life.s, P = life.pending ? life.pending.n : 1;
+  const kick = S(
+    `Пауза ${P} · ${Math.floor(NOW_YEAR + s.t)} · ${yrs(Math.floor(life.drAge + s.t))}`,
+    `Pause ${P} · ${Math.floor(NOW_YEAR + s.t)} · ${yrs(Math.floor(life.drAge + s.t))}`
+  );
+
+  if (id === 'screen') {
+    return {
+      id, kick, title: S('Первые изменения', 'First changes'),
+      text: S('«Есть изменения на сетчатке», — сказал врач и предложил прийти ещё раз. Вы выходите на улицу и щуритесь: мир на месте, машины едут, люди идут. Ничего не болит.', '“There are changes in the retina,” the doctor said, and asked you to come back. You walk outside and squint: the world is still there, cars pass, people walk. Nothing hurts.'),
+      note: S('Ретинопатия может годами не давать симптомов. Поэтому осмотр с расширенным зрачком нужен даже тогда, когда всё видно хорошо.', 'Retinopathy can go for years without symptoms. That is why an exam with dilated pupils is needed even when everything looks fine.'),
+      options: [
+        { k: 'now', label: S('Записаться на этой неделе', 'Book an appointment this week'), hint: S('Снимок, осмотр с линзой, план наблюдения. Неприятно, но быстро.', 'A scan, an exam with a lens, a follow-up plan. Unpleasant but quick.') },
+        { k: 'wait', label: S('Отложить до следующего года', 'Put it off until next year'), hint: S('Зрение пока нормальное. Год кажется недолгим.', 'Your sight is still normal. A year seems short.') },
+        { k: 'pharm', label: S('Проверить зрение таблицей в аптеке', 'Check your sight on the pharmacy chart'), hint: S('Верхние строчки видно. Этого достаточно?', 'You can read the top lines. Is that enough?') }
+      ]
+    };
+  }
+
+  if (id === 'tests') {
+    return {
+      id, kick, title: S('Обследование', 'Tests'),
+      text: S('Врач предлагает ОКТ — снимок сетчатки в разрезе — и ангиографию. Это покажет, есть ли отёк в центре и насколько близко к нему подошли изменения.', 'The doctor suggests OCT — a cross-section scan of the retina — and angiography. It will show whether there is swelling in the centre and how close the changes have come to it.'),
+      note: S('Капли и таблетки не убирают отёк сетчатки. Решение о лечении зависит от того, что покажет снимок.', 'Drops and tablets do not remove retinal swelling. The treatment decision depends on what the scan shows.'),
+      options: [
+        { k: 'full', label: S('Сделать ОКТ и ангиографию', 'Do OCT and angiography'), hint: S('Полная картина: есть ли отёк, где протекают сосуды. Дороже и дольше.', 'The full picture: is there swelling, where are the vessels leaking. Dearer and slower.') },
+        { k: 'oct', label: S('Только ОКТ', 'OCT only'), hint: S('Быстрее и дешевле. Ангиография подождёт.', 'Faster and cheaper. Angiography can wait.') },
+        { k: 'none', label: S('Пока не хочу знать', 'I do not want to know yet'), hint: S('Отложить. Болезнь не откладывается.', 'Put it off. The disease does not.') }
+      ]
+    };
+  }
+
+  if (id === 'treat') {
+    if (life.mode === 'dme') {
+      return {
+        id, kick, title: S('Лечение отёка', 'Treating the swelling'),
+        text: S('В центре сетчатки — отёк. Врач говорит об инъекциях в глаз: раз в месяц, потом реже. Или лазер, но при центральном отёке он уже не первый выбор.', 'There is swelling in the centre of the retina. The doctor talks about injections into the eye: once a month, then less often. Or laser, but with central swelling it is no longer the first choice.'),
+        note: S('Анти-VEGF-инъекции — основной метод при отёке в центре. Они не возвращают зрение всем, но заметно снижают риск его потерять.', 'Anti-VEGF injections are the main treatment for central swelling. They do not restore sight for everyone, but they clearly reduce the risk of losing it.'),
+        options: [
+          { k: 'inj', label: S('Начать инъекции по схеме', 'Start the injection schedule'), hint: S('Раз в месяц, с осмотрами. Дорого и дисциплинированно.', 'Once a month, with check-ups. Expensive and disciplined.') },
+          { k: 'laser', label: S('Сделать лазер', 'Have laser'), hint: S('Дешевле и быстрее. При центральном отёке — не самый сильный вариант.', 'Cheaper and faster. For central swelling, not the strongest option.') },
+          { k: 'watch', label: S('Пока наблюдать', 'Wait and see'), hint: S('Может, отёк сам уйдёт. Обычно не уходит.', 'Maybe the swelling will go away by itself. Usually it does not.') }
+        ]
+      };
+    }
+    if (life.mode === 'pdr') {
+      return {
+        id, kick, title: S('Лечение сосудов', 'Treating the vessels'),
+        text: S('На сетчатке выросли новые сосуды. Они хрупкие и могут кровоточить. Врач предлагает лазер — сотни маленьких ожогов по периферии, чтобы убрать кислородный голод.', 'New vessels have grown on the retina. They are fragile and can bleed. The doctor suggests laser — hundreds of tiny burns around the periphery to remove the lack of oxygen.'),
+        note: life.access < .45
+          ? S('В вашей больнице нет лазера. Ближайший центр — в двух часах езды, и запись идёт месяцами. Это тоже часть статистики.', 'Your hospital has no laser. The nearest centre is two hours away, and the waiting list runs for months. That is part of the statistics too.')
+          : S('Панретинальный лазер снижает риск тяжёлой потери зрения примерно вдвое. Инъекции работают на отёк, лазер — на новые сосуды.', 'Panretinal laser roughly halves the risk of severe sight loss. Injections work on swelling, laser on the new vessels.'),
+        options: [
+          { k: 'laser', label: S('Сделать лазер по схеме', 'Have laser on schedule'), hint: S('Несколько сеансов. Периферия зрения уйдёт, центр — останется.', 'Several sessions. You will lose the periphery; the centre will remain.') },
+          { k: 'both', label: S('Лазер и инъекции', 'Laser and injections'), hint: S('Больше шансов, больше денег и поездок.', 'More chances, more money and more journeys.') },
+          { k: 'watch', label: S('Пока наблюдать', 'Wait and see'), hint: S('Сосуды не исчезнут. Кровоизлияние может случиться в любой месяц.', 'The vessels will not disappear. A haemorrhage can happen any month.') }
+        ]
+      };
+    }
+    return {
+      id, kick, title: S('Что делать дальше', 'What to do next'),
+      text: S('Пока это непролиферативная стадия. Специфического лечения нет — но есть то, что сильнее любого укола: сахар, давление и регулярные осмотры.', 'For now this is a non-proliferative stage. There is no specific treatment — but there is something stronger than any injection: glucose, blood pressure and regular exams.'),
+      note: S('Каждый процентный пункт HbA1c ниже — примерно на треть меньше риск микрососудистых осложнений. Это касается и глаз.', 'Every percentage point lower HbA1c means about a third less risk of microvascular complications. That includes the eyes.'),
+      options: [
+        { k: 'control', label: S('Взять сахар и давление под контроль', 'Take glucose and blood pressure in hand'), hint: S('Скучно, ежедневно и эффективнее всего.', 'Boring, daily and more effective than anything else.') },
+        { k: 'watch', label: S('Просто наблюдаться', 'Just keep attending'), hint: S('Приходить на осмотры и ничего не менять.', 'Come to the exams and change nothing.') },
+        { k: 'laser', label: S('Попросить лазер профилактически', 'Ask for preventive laser'), hint: S('Врач против: без новых сосудов лазер не показан.', 'The doctor is against it: without new vessels, laser is not indicated.') }
+      ]
+    };
+  }
+
+  if (id === 'disclose') {
+    return {
+      id, kick, title: S('Кому сказать', 'Whom to tell'),
+      text: S('Болезнь уже видна другим: вы щуритесь, не узнаёте знакомых издалека, читаете с трудом. На работе и дома об этом можно молчать — или сказать.', 'The illness is already visible to others: you squint, you do not recognise people from a distance, you read with difficulty. At work and at home you can stay silent — or say it.'),
+      note: S('Слепота пугает сильнее многих болезней. Но поддержка и реабилитация меняют то, как с ней живут.', 'Blindness frightens people more than many diseases. But support and rehabilitation change how one lives with it.'),
+      options: [
+        { k: 'tell', label: S('Рассказать близким и на работе', 'Tell family and colleagues'), hint: S('Честно, с последствиями. Иногда — с неожиданной поддержкой.', 'Honestly, with consequences. Sometimes with unexpected support.') },
+        { k: 'hide', label: S('Скрывать, пока не спросят', 'Hide it until someone asks'), hint: S('Никто не спросит. И не поможет.', 'No one will ask. And no one will help.') },
+        { k: 'community', label: S('Найти тех, кто живёт с этим', 'Find people who live with this'), hint: S('Сообщества и реабилитация: люди, которым не надо объяснять.', 'Communities and rehabilitation: people to whom nothing needs explaining.') }
+      ]
+    };
+  }
+
+  if (s.vision < 45) {
+    return {
+      id, kick, title: S('Последний отрезок', 'The last stretch'),
+      text: S('Зрение больше не вернётся к прежнему. Врач говорит не о лечении, а о том, как жить с тем, что осталось.', 'Your sight will not return to what it was. The doctor is no longer talking about treatment, but about how to live with what is left.'),
+      note: S('Реабилитация не возвращает зрение, но возвращает самостоятельность: трость, обучение, тифлотехника, собака-поводырь.', 'Rehabilitation does not restore sight, but it restores independence: a cane, training, assistive technology, a guide dog.'),
+      options: [
+        { k: 'rehab', label: S('Реабилитация: трость, обучение, техника', 'Rehabilitation: cane, training, technology'), hint: S('Не вернуть зрение — вернуть самостоятельность.', 'Not to restore sight — to restore independence.') },
+        { k: 'keep', label: S('Продолжать лечение и надеяться', 'Keep treating and hoping'), hint: S('Ещё уколы. Ещё шанс. Ещё деньги.', 'More injections. More hope. More money.') },
+        { k: 'trial', label: S('Экспериментальная терапия', 'Experimental therapy'), hint: S('Клиническое исследование: шанс и лотерея.', 'A clinical trial: a chance and a lottery.') }
+      ]
+    };
+  }
+  return {
+    id, kick, title: S('Последний отрезок', 'The last stretch'),
+    text: S('Прошло больше двадцати лет. Врач говорит, что главное теперь — не пропустить момент и не исчезнуть из поля зрения.', 'More than twenty years have passed. The doctor says the main thing now is not to miss the moment and not to disappear from view.'),
+    note: S('Диабетическая ретинопатия не исчезает. Но с регулярными осмотрами и лечением можно дожить до старости со зрением.', 'Diabetic retinopathy does not go away. But with regular exams and treatment one can grow old with sight.'),
+    options: [
+      { k: 'keep', label: S('Продолжать наблюдаться и лечиться', 'Keep attending and treating'), hint: S('Осмотры, снимки, лечение по показаниям.', 'Exams, scans, treatment as indicated.') },
+      { k: 'live', label: S('Жить, а не лечиться', 'Live, rather than be treated'), hint: S('Меньше клиник, больше жизни. Риск — тоже часть выбора.', 'Fewer clinics, more life. Risk is part of the choice too.') },
+      { k: 'trial', label: S('Экспериментальная терапия', 'Experimental therapy'), hint: S('Клиническое исследование: шанс и лотерея.', 'A clinical trial: a chance and a lottery.') }
+    ]
+  };
+}
+
+Life.prototype.resolve = function (id, idx) {
+  const s = this.s;
+  const def = decisionDef(this, id);
+  const opt = def.options[idx] || def.options[0];
+  this.choices.push({ q: def.title, a: opt.label });
+  this.queue = this.queue.filter(q => q.id !== id);
+  this.pending = this.queue[0] || null;
+  if (this.auto) this.push('note', '— ' + opt.label);
+
+  if (id === 'screen') {
+    if (idx === 0) {
+      s.delay = rnd(this.rng, .1, .3);
+      this.dmg *= .97;
+      s.money = clamp(s.money - 3);
+      this.push('calm', S('Запись через три дня. Врач смотрит оба глаза, капает капли и назначает снимок сетчатки.', 'An appointment in three days. The doctor examines both eyes, puts in drops and orders a scan of the retina.'));
+    } else if (idx === 1) {
+      s.delay = rnd(this.rng, 1.1, 2.0);
+      this.dmg *= 1.15;
+      s.quality = clamp(s.quality - 4);
+      this.push('bad', S('Вы решаете прийти в следующем году. Зрение пока нормальное, а дел слишком много.', 'You decide to come next year. Your sight is still normal, and there is too much to do.'));
+    } else {
+      s.delay = rnd(this.rng, .9, 1.5);
+      this.dmg *= 1.08;
+      s.quality = clamp(s.quality - 5);
+      this.push('calm', S('Вы проверяете зрение таблицей в аптеке. Верхние строчки видно. Вы решаете, что этого достаточно.', 'You check your sight on the pharmacy chart. You can read the top lines. You decide that is enough.'));
+    }
+    this.push('note', def.note);
+    this.schedule('tests', s.delay);
+    return;
+  }
+
+  if (id === 'tests') {
+    if (idx === 0) {
+      s.money = clamp(s.money - 12 * this.cu);
+      this.dmg *= .96;
+      this.push('calm', S('Полное обследование: снимок в разрезе, ангиография, осмотр с линзой. Врач показывает, где именно протекают сосуды.', 'A full work-up: a cross-section scan, angiography, an exam with a lens. The doctor shows exactly where the vessels are leaking.'));
+    } else if (idx === 1) {
+      s.money = clamp(s.money - 5 * this.cu);
+      this.dmg *= 1.03;
+      this.push('calm', S('Вы делаете только снимок в разрезе. Часть картины остаётся скрытой, но времени это экономит.', 'You have only the cross-section scan. Part of the picture stays hidden, but it saves time.'));
+    } else {
+      this.dmg *= 1.1;
+      s.quality = clamp(s.quality - 4);
+      this.push('bad', S('Вы уходите из кабинета, не дождавшись результатов. Ещё полгода вы живёте как раньше.', 'You leave the office without waiting for the results. For another six months you live as before.'));
+    }
+    this.push('big', this.diagText());
+    this.push('note', def.note);
+    this.schedule('treat', .45);
+    return;
+  }
+
+  if (id === 'treat') {
+    if (this.mode === 'dme') {
+      if (idx === 0) {
+        s.injections = true; s.treated = true; s.adherence = .9;
+        s.money = clamp(s.money - 16 * this.cu);
+        s.vision = clamp(s.vision + rnd(this.rng, 2, 6));
+        this.dmg *= .8;
+        this.push('calm', S('Вас кладут на кушетку, капают обезболивающее. Игла входит в глаз — вы считаете до десяти. Через месяц повтор, потом ещё и ещё.', 'You lie on the couch and they put in anaesthetic drops. The needle goes into your eye — you count to ten. A month later, another, then more.'));
+      } else if (idx === 1) {
+        s.laser = true; s.treated = true; s.adherence = .65;
+        s.money = clamp(s.money - 8 * this.cu);
+        this.dmg *= .95;
+        this.push('calm', S('Вам делают лазер. Отёк в центре он не убирает полностью, но уменьшает нагрузку на сетчатку.', 'You have laser. It does not remove the swelling in the centre completely, but it reduces the load on the retina.'));
+      } else {
+        s.adherence = .15;
+        this.dmg *= 1.2;
+        s.quality = clamp(s.quality + 2);
+        this.push('bad', S('Вы решаете подождать. Отёк не болит, а жизнь и так дорогая.', 'You decide to wait. The swelling does not hurt, and life is expensive enough.'));
+      }
+    } else if (this.mode === 'pdr') {
+      if (idx === 0) {
+        s.laser = true; s.treated = true; s.adherence = .85;
+        s.money = clamp(s.money - 9 * this.cu);
+        this.dmg *= .75;
+        this.push('calm', S('Лазер делают в несколько заходов. Вспышки, счёт, запах. После третьего сеанса врач говорит: «Пока остановились».', 'The laser is done in several sessions. Flashes, counting, a smell. After the third session the doctor says: “We have stopped it for now.”'));
+      } else if (idx === 1) {
+        s.laser = true; s.injections = true; s.treated = true; s.adherence = .85;
+        s.money = clamp(s.money - 24 * this.cu);
+        this.dmg *= .7;
+        this.push('calm', S('Лазер и уколы в одном курсе. Дорого, много поездок, но врач считает, что это лучший шанс для ваших глаз.', 'Laser and injections in one course. Expensive, many journeys, but the doctor thinks it is the best chance for your eyes.'));
+      } else {
+        s.adherence = .1;
+        this.dmg *= 1.25;
+        this.push('bad', S('Вы не решаетесь. Новые сосуды не болят — значит, можно ещё подождать.', 'You cannot decide. The new vessels do not hurt — so you can wait a little longer.'));
+      }
+    } else {
+      if (idx === 0) {
+        s.treated = true; s.adherence = .9;
+        this.dmg *= .8;
+        s.quality = clamp(s.quality + 2);
+        this.push('calm', S('Вы меняете питание, начинаете ходить, принимаете таблетки без пропусков. Сахар медленно, но идёт вниз.', 'You change your diet, start walking, take your tablets without missing a dose. Glucose slowly comes down.'));
+      } else if (idx === 1) {
+        s.adherence = .5;
+        this.dmg *= 1.02;
+        this.push('calm', S('Вы решаете ничего не менять и просто приходить на осмотры. Врач вздыхает и назначает следующий.', 'You decide to change nothing and simply come to the exams. The doctor sighs and schedules the next one.'));
+      } else {
+        s.laser = true; s.adherence = .7;
+        s.money = clamp(s.money - 8 * this.cu);
+        s.quality = clamp(s.quality - 2);
+        this.dmg *= .95;
+        this.push('calm', S('Врач долго объясняет, что без новых сосудов лазер не нужен, но делает. Ночью вы хуже видите периферию.', 'The doctor spends a long time explaining that without new vessels laser is not needed, but does it. At night you see the periphery worse.'));
+      }
+    }
+    this.push('note', def.note);
+    this.schedule('disclose', Math.max(1.1, this.endT * .3));
+    if (!this.hadLast) this.schedule('last', Math.max(1.5, this.endT * .72));
+    return;
+  }
+
+  if (id === 'disclose') {
+    if (idx === 0) {
+      s.disclosed = true;
+      s.quality = clamp(s.quality + 7);
+      s.money = clamp(s.money - 6);
+      this.dmg *= .99;
+      this.push('calm', S('Вы говорите вслух. Кто-то отводит глаза, кто-то предлагает помощь — и это меняет неделю.', 'You say it out loud. Someone looks away, someone offers help — and that changes the week.'));
+    } else if (idx === 1) {
+      s.quality = clamp(s.quality - 7);
+      s.money = clamp(s.money + 4);
+      this.dmg *= 1.06;
+      this.push('bad', S('Вы молчите. На работе не знают, дома не спрашивают. Вы носите это один.', 'You stay silent. At work they do not know, at home they do not ask. You carry it alone.'));
+    } else {
+      s.quality = clamp(s.quality + 5);
+      s.adherence = clamp01(s.adherence + .06);
+      s.money = clamp(s.money - 2);
+      this.dmg *= .98;
+      this.push('calm', S('Вы находите людей с таким же диагнозом. Впервые за долгое время кто-то понимает без объяснений.', 'You find people with the same diagnosis. For the first time in a long while someone understands without explanation.'));
+    }
+    this.push('note', def.note);
+    return;
+  }
+
+  this.hadLast = true;
+  if (idx === 0) {
+    if (s.vision < 45) {
+      s.quality = clamp(s.quality + 14);
+      s.money = clamp(s.money - 6);
+      s.adherence = clamp01(s.adherence + .05);
+      this.dmg *= .97;
+      this.push('good', S('Вас учат ходить с тростью, читать с экрана, готовить, не обжигаясь. Мир становится меньше — но вы снова в нём хозяин.', 'They teach you to walk with a cane, read from a screen, cook without burning yourself. The world becomes smaller — but you are in charge of it again.'));
+    } else {
+      this.dmg *= .97;
+      s.money = clamp(s.money - 8 * this.cu);
+      s.quality = clamp(s.quality - 3);
+      this.push('calm', S('Вы продолжаете приходить на осмотры. Это скучно, и именно поэтому работает.', 'You keep coming to the exams. It is boring, and that is exactly why it works.'));
+    }
+  } else if (idx === 1) {
+    if (s.vision < 45) {
+      s.quality = clamp(s.quality + 10);
+      s.money = clamp(s.money - 4);
+      this.push('good', S('Вы выбираете не бороться за каждый процент, а жить с тем, что есть. Боль отступает первой.', 'You choose not to fight for every per cent but to live with what you have. The pain recedes first.'));
+    } else {
+      s.quality = clamp(s.quality + 8);
+      this.dmg *= 1.06;
+      this.push('calm', S('Вы перестаёте жить от осмотра до осмотра. Врач не одобряет, но вы впервые за годы живёте, а не лечитесь.', 'You stop living from exam to exam. The doctor does not approve, but for the first time in years you are living rather than being treated.'));
+    }
+  } else {
+    s.money = clamp(s.money - 20 * this.cu);
+    if (this.rng() < .35) {
+      s.vision = clamp(s.vision + rnd(this.rng, 4, 12));
+      s.quality = clamp(s.quality + 4);
+      this.dmg *= .95;
+      this.push('good', S('Вам достаётся место в исследовании. Врач не обещает ничего — и вы согласны даже на это.', 'You get a place in a trial. The doctor promises nothing — and you agree even to that.'));
+    } else {
+      s.quality = clamp(s.quality - 6);
+      this.dmg *= 1.05;
+      this.push('bad', S('Исследование не помогает. Вы возвращаетесь к обычному наблюдению, потратив деньги и год надежды.', 'The trial does not help. You return to ordinary follow-up, having spent money and a year of hope.'));
+    }
+  }
+  this.push('note', def.note);
+};
+
+function runLifeOut(o) {
+  const l = new Life(Object.assign({}, o, { auto: true }));
+  let guard = 0;
+  while (!l.done && guard++ < 3000) l.advance(.35);
+  if (!l.done) l.finish();
+  return { country: l.country, sex: l.sex, onset: l.drAge, endAge: l.endAge, years: Math.round(l.s.t), kind: l.outcomeKind, vision: l.s.vision };
+}
+
+const LS_LIVES = 'dr.lives.v1', LS_SET = 'dr.settings.v1';
+const ST = { sex: 'random', ageBand: 'stat', country: 'ru', type: 'random', control: 'stat', auto: false, soft: false, music: false };
+try { const raw = localStorage.getItem(LS_SET); if (raw) Object.assign(ST, JSON.parse(raw)); } catch (e) {}
+function saveSettings() { try { localStorage.setItem(LS_SET, JSON.stringify(ST)); } catch (e) {} }
+
+let sim = null, code = '0000', feedIdx = 0, paused = true, panelOpen = true, ended = false;
+let speed = 1, atBottom = true, rafId = 0, lastTs = 0;
+
+function rebuildSelects() {
+  const sel = $('#selCountry');
+  sel.innerHTML = COUNTRIES.map(c => `<option value="${c.id}">${esc(countryName(c))} · ${S('доступ', 'access')} ${accessWord(c.access)}</option>`).join('');
+  sel.value = ST.country;
+  const ctl = $('#selControl');
+  ctl.innerHTML = `
+    <option value="stat">${S('По статистике — HbA1c около 8%', 'By statistics — HbA1c around 8%')}</option>
+    <option value="good">${S('Хороший — HbA1c около 6,5%', 'Good — HbA1c around 6.5%')}</option>
+    <option value="poor">${S('Плохой — HbA1c около 10%', 'Poor — HbA1c around 10%')}</option>`;
+  ctl.value = ST.control;
+}
+
+function syncUI() {
+  $$('#segSex button').forEach(b => b.classList.toggle('on', b.dataset.v === ST.sex));
+  $$('#segAge button').forEach(b => b.classList.toggle('on', b.dataset.v === ST.ageBand));
+  $$('#segType button').forEach(b => b.classList.toggle('on', b.dataset.v === ST.type));
+  $('#tgAuto').checked = ST.auto;
+  $('#tgSoft').checked = ST.soft;
+  $('#tgMusic').checked = ST.music;
+}
+
+function startLife(allRandom) {
+  stopLoop();
+  const seed = (Math.random() * 4294967295) >>> 0;
+  const r = mulberry32(seed);
+  const country = COUNTRIES.find(c => c.id === ST.country) || COUNTRIES[0];
+  const sex = (allRandom || ST.sex === 'random') ? (r() < .5 ? 'female' : 'male') : ST.sex;
+  const type = (allRandom || ST.type === 'random') ? (r() < .1 ? 't1' : 't2') : ST.type;
+  const band = allRandom ? pick(r, ['stat', 'stat', 'young', 'old']) : ST.ageBand;
+  const [a, m, b] = type === 't1' ? [4, 12, 30] : [30, 52, 76];
+  let onset;
+  if (band === 'young') onset = tri(r, a, a + (m - a) * .45, m);
+  else if (band === 'old') onset = tri(r, m, m + (b - m) * .45, b);
+  else onset = tri(r, a, m, b);
+  onset = Math.max(2, Math.round(onset));
+  onset = Math.min(onset, Math.max(6, country.life - 10));
+  const controlBase = allRandom
+    ? pick(r, [.22, .45, .62, .8])
+    : (ST.control === 'good' ? .78 : ST.control === 'poor' ? .22 : (type === 't1' ? .52 : .45));
+
+  sim = new Life({ country, sex, onset, type, controlBase, seed, auto: !!ST.auto, soft: !!ST.soft });
+  code = seed.toString(36).toUpperCase().slice(-4).padStart(4, '0');
+  feedIdx = 0; paused = true; panelOpen = true; ended = false; speed = 1; atBottom = true; lastTs = 0;
+  $('#feed').innerHTML = '';
+  $('#simDisease').textContent = dname();
+  $('#simPerson').textContent = `${sexWord(sex)} · ${S('диабет в', 'diabetes at')} ${onset} · ${typeShort(type)} · ${countryName(country)} · ${code}`;
+  $('#simYear').textContent = NOW_YEAR;
+  $('#simAge').textContent = sim.drAge;
+  $('#simAgeWord').textContent = ageWord(sim.drAge);
+  $('#simStage').textContent = sim.stageName;
+  $('#visNum').textContent = acuity(100);
+  $('#mVis').style.width = '100%';
+  $('#mVis').style.background = '#7f9d82';
+  $('#mCtl').style.width = (sim.control * 100) + '%';
+  $('#mLife').style.width = sim.s.quality + '%';
+  $('#simBar').style.width = '0%';
+  $('#scrubL').textContent = S('ДР в', 'DR at') + ' ' + sim.drAge;
+  $('#scrubR').textContent = yrs(sim.endT) + S(' с диагнозом', ' with the diagnosis');
+  $$('.spd').forEach(b => b.classList.toggle('on', b.dataset.spd === '1'));
+  $('#btnPause').textContent = S('Пауза', 'Pause');
+  $('#sim').classList.add('on');
+  document.body.style.overflow = 'hidden';
+
+  $('#panelCard').innerHTML = `
+    <p class="kick">${S('Жизнь', 'Life')} ${code} · ${esc(dgroup())}</p>
+    <h3>${esc(dname())}</h3>
+    <p class="pt" style="font-family:var(--serif);font-size:16px;color:#d8d3ca">${esc(sim.diabetesLine())}</p>
+    <p class="pt">${esc(tagline())}</p>
+    <p class="pt" style="color:var(--dim2);font-size:12.5px">${S('Изменения на сетчатке найдут через', 'Retinal changes will be found in')} ${yrs(sim.latency)} — ${S('в', 'at')} ${yrs(sim.drAge)}. ${esc(countryName(country))}, ${S('доступ к помощи', 'access to care')}: ${accessWord(country.access)}. ${S('Болезнь выбрана не вами — как и в жизни.', 'The illness was not your choice — as in life.')}</p>
+    <div class="opts"><button class="opt" id="btnBegin"><span class="k">→</span><span class="tx"><strong>${S('Начать', 'Begin')}</strong><em>${S('Около 15 минут, если не ускорять.', 'About 15 minutes if you do not speed up.')}</em></span></button></div>
+    <p class="pn">${S('Внизу — кнопки паузы и скорости. Каждое решение меняет то, что будет дальше.', 'The pause and speed buttons are below. Every decision changes what comes next.')}</p>`;
+  $('#panel').classList.add('on');
+  $('#btnBegin').onclick = begin;
+  setTimeout(() => { const b = $('#btnBegin'); if (b) b.focus(); }, 80);
+}
+
+function begin() {
+  $('#panel').classList.remove('on');
+  panelOpen = false; paused = false;
+  sim.start();
+  lastTs = performance.now();
+  if (!rafId) rafId = requestAnimationFrame(loop);
+  paint();
+}
+
+function stopLoop() { if (rafId) cancelAnimationFrame(rafId); rafId = 0; }
+
+function loop(ts) {
+  if (!sim) return;
+  if (!lastTs) lastTs = ts;
+  if (paused || panelOpen) { lastTs = ts; rafId = requestAnimationFrame(loop); return; }
+  const dt = Math.min(.12, Math.max(0, (ts - lastTs) / 1000));
+  lastTs = ts;
+  sim.advance(dt * speed * RATE);
+  paint();
+  if (sim.done) { showEnd(); return; }
+  if (sim.pending && sim.s.t >= sim.pending.t - 1e-9) { openDecision(); return; }
+  rafId = requestAnimationFrame(loop);
+}
+
+function paint() {
+  if (!sim) return;
+  const l = sim, s = l.s, age = Math.floor(l.drAge + s.t);
+  $('#simAge').textContent = age;
+  $('#simAgeWord').textContent = ageWord(age);
+  $('#simYear').textContent = Math.floor(NOW_YEAR + s.t);
+  $('#simStage').textContent = l.stageName + (s.dme ? S(' · ДМО', ' · DME') : '');
+  const mv = $('#mVis');
+  mv.style.width = s.vision + '%';
+  mv.style.background = s.vision < 25 ? '#b8503c' : s.vision < 55 ? '#c79a5c' : '#7f9d82';
+  $('#visNum').textContent = acuity(s.vision);
+  $('#mCtl').style.width = (s.control * 100) + '%';
+  $('#mLife').style.width = s.quality + '%';
+  $('#simBar').style.width = (clamp01(s.t / Math.max(.3, l.endT)) * 100) + '%';
+  $('#scrubR').textContent = s.blind ? (S('слепота в ', 'blind at ') + Math.round(l.drAge + l.blindAt)) : (yrs(l.endT) + S(' с диагнозом', ' with the diagnosis'));
+
+  const feed = $('#feed');
+  for (; feedIdx < l.events.length; feedIdx++) {
+    const e = l.events[feedIdx];
+    const el = document.createElement('article');
+    el.className = 'ev ' + (e.kind === 'note' ? 'note' : e.kind);
+    const m = document.createElement('div');
+    m.className = 'm';
+    m.textContent = e.kind === 'note' ? '' : `${Math.floor(NOW_YEAR + e.t)} · ${yrs(e.age)}`;
+    const p = document.createElement('p');
+    p.textContent = e.text;
+    el.append(m, p);
+    feed.append(el);
+  }
+  if (atBottom) {
+    const wrap = $('.feedwrap');
+    if (wrap) wrap.scrollTop = wrap.scrollHeight;
+  }
+}
+
+function openDecision() {
+  if (!sim || !sim.pending) return;
+  const def = decisionDef(sim, sim.pending.id);
+  panelOpen = true; paused = true;
+  $('#panelCard').innerHTML = `
+    <p class="kick">${esc(def.kick)}</p>
+    <h3>${esc(def.title)}</h3>
+    <p class="pt">${esc(def.text)}</p>
+    <div class="opts"></div>
+    <p class="pn">${esc(def.note)}</p>`;
+  const box = $('#panelCard .opts');
+  def.options.forEach((o, i) => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.type = 'button';
+    b.innerHTML = `<span class="k">${i + 1}</span><span class="tx"><strong>${esc(o.label)}</strong><em>${esc(o.hint)}</em></span>`;
+    b.onclick = () => choose(i);
+    box.append(b);
+  });
+  $('#panel').classList.add('on');
+  $('#panelCard').scrollTop = 0;
+  paint();
+  setTimeout(() => { const f = $('#panelCard .opt'); if (f) f.focus(); }, 60);
+}
+
+function choose(i) {
+  if (!sim || !sim.pending) return;
+  const id = sim.pending.id;
+  $('#panel').classList.remove('on');
+  panelOpen = false;
+  sim.resolve(id, i);
+  paused = false;
+  lastTs = performance.now();
+  paint();
+  if (sim.done) { showEnd(); return; }
+  if (sim.pending && sim.s.t >= sim.pending.t - 1e-9) { openDecision(); return; }
+  if (!rafId) rafId = requestAnimationFrame(loop);
+}
+
+function shadowLabel(x) {
+  const f = x.sex === 'female';
+  if (x.kind === 'blind') return S(`${f ? 'Ослепла' : 'Ослеп'} в ${x.endAge}`, `Went blind at ${x.endAge}`);
+  if (x.kind === 'kept') return S('Зрение сохранилось', 'Sight preserved');
+  return S(`Видит ${acuity(x.vision)}`, `Sees ${acuity(x.vision)}`);
+}
+
+function shadows() {
+  const others = COUNTRIES.filter(c => c.id !== sim.country.id);
+  const order = ['ru', 'by', 'in', 'ng', 'br', 'de', 'us', 'cn', 'jp', 'ke', 'eg', 'gb', 'fr', 'za', 'id', 'mx', 'pl']
+    .map(id => others.find(c => c.id === id)).filter(Boolean);
+  const r = mulberry32((sim.seed ^ 0x9e3779b9) >>> 0);
+  const out = [];
+  while (out.length < 4 && order.length) {
+    const c = order.splice(Math.floor(r() * order.length), 1)[0];
+    const sex = r() < .5 ? 'female' : 'male';
+    const onset = Math.max(2, Math.round(sim.onset + rnd(r, -6, 6)));
+    out.push(runLifeOut({ country: c, sex, onset, type: sim.type, controlBase: sim.controlBase, seed: (sim.seed + out.length * 7919 + 13) >>> 0 }));
+  }
+  return out;
+}
+
+function showEnd() {
+  if (!sim || ended) return;
+  ended = true; stopLoop(); paused = true; panelOpen = false;
+  $('#panel').classList.remove('on');
+  const l = sim, v = l.s.vision, kind = l.outcomeKind, age = l.endAge;
+  const sh = shadows();
+
+  let html = `<div class="end" id="endCard">
+    <p class="kick">${S('Жизнь', 'Life')} ${code} · ${esc(dname())} · ${esc(countryName(l.country))} · ${sexWord(l.sex)}</p>`;
+  if (kind === 'blind') html += `<h2>${l.soft ? S('Вы потеряли зрение в', 'You lost your sight at') : S('Вы ослепли в', 'You went blind at')} <em>${age}</em></h2>`;
+  else if (kind === 'kept') html += `<h2>${S('Вы всё ещё <em>видите</em>', 'You can still <em>see</em>')}</h2>`;
+  else html += `<h2>${S('Вы видите на', 'You see')} <em>${acuity(v)}</em></h2>`;
+  const typeName = typeWord(l.type);
+  html += `<p class="cause">${typeName}. ${esc(l.stageName)}${l.s.dme ? S(', диабетический макулярный отёк', ', diabetic macular oedema') : ''}. ${S('С диагнозом ретинопатии —', 'With the retinopathy diagnosis —')} ${yrs(l.s.t)}${kind === 'blind' ? S(`, слепота пришла в ${Math.round(l.drAge + l.blindAt)}`, `, blindness came at ${Math.round(l.drAge + l.blindAt)}`) : ''}. ${l.soft ? '' : S('Это была не вся ваша жизнь.', 'This was not your whole life.')}</p>`;
+
+  html += `<div class="stat-row">
+      <div><b>${age}</b><span>${S('лет в конце', 'years at the end')}</span></div>
+      <div><b>${Math.round(l.s.t)}</b><span>${S('лет с диагнозом', 'years with the diagnosis')}</span></div>
+      <div><b>${l.choices.length}</b><span>${S('пауз и решений', 'pauses and decisions')}</span></div>
+    </div>`;
+
+  html += `<h4>${S('Рядом, в тот же день', 'Beside you, the same day')}</h4>
+    <p class="small" style="color:var(--dim);margin-bottom:12px">${S('Диабетическую ретинопатию находят у миллионов людей в год. Четверо из них жили по той же статистике — в других странах. Никто из них этого не выбирал.', 'Diabetic retinopathy is found in millions of people every year. Four of them lived by the same statistics — in other countries. None of them chose it.')}</p>
+    <div class="neigh">`;
+  sh.forEach(x => {
+    const f = x.sex === 'female';
+    html += `<article><h5>${esc(countryName(x.country))} · ${sexWord(x.sex)}</h5>
+      <p>${S('ретинопатия в', 'retinopathy at')} ${x.onset}</p>
+      <div class="ag">${x.endAge} ${ageWord(x.endAge)}</div>
+      <p>${esc(shadowLabel(x))}</p></article>`;
+  });
+  html += `</div>`;
+
+  html += `<h4>${S('Ваши решения', 'Your decisions')}</h4><div class="recap">`;
+  l.choices.forEach(c => { html += `<div><span>${esc(c.q)}</span><b>${esc(c.a)}</b></div>`; });
+  html += `</div>`;
+
+  html += `<h4>${S('Что здесь было настоящим', 'What was real here')}</h4><div class="facts">`;
+  facts().forEach(f => { html += `<div><b>${esc(f[0])}</b><span>${esc(f[1])}</span></div>`; });
+  html += `</div>`;
+
+  html += `<h4>${S('Что вы скажете этому человеку?', 'What would you say to this person?')}</h4>
+    <p class="small" style="color:var(--dim2);margin-bottom:8px">${S('Одна строка. Останется только в этом браузере.', 'One line. It stays in this browser only.')}</p>
+    <textarea class="words" id="wordsBox" maxlength="240" placeholder="${S('Например: я бы не ждала так долго.', 'For example: I would not have waited so long.')}"></textarea>
+    <div class="end-actions">
+      <button class="btn" id="btnAgain">${S('Прожить другую жизнь', 'Live another life')}</button>
+      <button class="btn ghost" id="btnHome">${S('На главную', 'Back to the start')}</button>
+      <button class="btn ghost" id="btnCopy">${S('Скопировать итог', 'Copy the summary')}</button>
+    </div>`;
+
+  html += `<div class="help">${S('Если то, что вы прочитали, слишком похоже на вашу жизнь: 8-800-2000-122 (Россия, бесплатно, круглосуточно)<br>findahelpline.com — линии помощи в 130+ странах.', 'If what you have just read is too close to your life: 8-800-2000-122 (Russia, free, 24/7)<br>findahelpline.com — helplines in 130+ countries.')}</div>`;
+  html += `<p class="fineprint">${S('Это модель, а не прогноз и не медицинская рекомендация. Симуляция следит за зрением, а не за продолжительностью жизни: она заканчивается не смертью, а тем, что осталось от зрения. Цифры — приблизительные оценки: IDF Diabetes Atlas 2021, метаанализ распространённости ДР (Ophthalmology, 2021), GBD / Vision Loss Expert Group, AAO Preferred Practice Pattern 2024, UKPDS. Течение болезни упрощено: решения меняют модель, а не реальность. Если вас что-то беспокоит в собственном здоровье, это повод пойти к врачу.', 'This is a model, not a forecast or medical advice. The simulation follows sight, not lifespan: it ends not with death but with what is left of vision. The figures are rough estimates: IDF Diabetes Atlas 2021, a meta-analysis of diabetic retinopathy prevalence (Ophthalmology, 2021), GBD / Vision Loss Expert Group, AAO Preferred Practice Pattern 2024, UKPDS. The course of the disease is simplified: decisions change the model, not reality. If something worries you about your own health, that is a reason to see a doctor.')}</p>
+  </div>`;
+
+  $('#feed').insertAdjacentHTML('beforeend', html);
+  const card = $('#endCard');
+  card.scrollIntoView({ block: 'start', behavior: 'smooth' });
+
+  $('#btnAgain').onclick = () => { closeSim(); startLife(true); };
+  $('#btnHome').onclick = closeSim;
+  $('#btnCopy').onclick = async () => {
+    const txt = S(`${dname()}. ${kind === 'blind' ? 'Слепота в ' + age + '.' : 'Зрение ' + acuity(v) + ' в ' + age + '.'} С диагнозом ${Math.round(l.s.t)} лет. ${countryName(l.country)}. Симуляция «Один диагноз: ретинопатия».`, `${dname()}. ${kind === 'blind' ? 'Blind at ' + age + '.' : 'Sight ' + acuity(v) + ' at ' + age + '.'} ${Math.round(l.s.t)} years with the diagnosis. ${countryName(l.country)}. “One Diagnosis: retinopathy” simulation.`);
+    try { await navigator.clipboard.writeText(txt); $('#btnCopy').textContent = S('Скопировано', 'Copied'); } catch (e) {}
+  };
+  $('#wordsBox').addEventListener('change', e => {
+    const v2 = e.target.value.trim();
+    if (v2) { saveLife(v2); renderPast(); }
+  });
+  saveLife('');
+  renderPast();
+}
+
+function saveLife(words) {
+  const l = sim;
+  let arr = [];
+  try { arr = JSON.parse(localStorage.getItem(LS_LIVES) || '[]'); } catch (e) {}
+  const entry = {
+    code,
+    countryId: l.country.id,
+    country: l.country.name,
+    drAge: l.drAge,
+    endAge: l.endAge,
+    years: Math.round(l.s.t),
+    kind: l.outcomeKind,
+    vision: Math.round(l.s.vision),
+    words: words || '',
+    date: Date.now()
+  };
+  const i = arr.findIndex(x => x.code === code && x.date === entry.date);
+  if (i < 0) arr.unshift(entry); else arr[i] = entry;
+  try { localStorage.setItem(LS_LIVES, JSON.stringify(arr.slice(0, 24))); } catch (e) {}
+}
+
+function renderPast() {
+  let arr = [];
+  try { arr = JSON.parse(localStorage.getItem(LS_LIVES) || '[]'); } catch (e) {}
+  const box = $('#pastBox'), list = $('#pastList');
+  if (!arr.length) { box.classList.remove('on'); return; }
+  box.classList.add('on');
+  list.innerHTML = '';
+  arr.forEach(x => {
+    const cc = COUNTRIES.find(c => c.id === x.countryId);
+    const cname = cc ? countryName(cc) : x.country;
+    const d = document.createElement('div');
+    const lbl = x.kind === 'blind' ? S(' · слепота', ' · blindness') : x.kind === 'kept' ? S(' · зрение сохранено', ' · sight preserved') : S(' · зрение ', ' · sight ') + acuity(x.vision);
+    d.innerHTML = `<b>${esc(cname)}${lbl}</b><span>${x.endAge} ${ageWord(x.endAge)} · ${yrs(x.years)} ${S('с диагнозом', 'with the diagnosis')}</span><code>${esc(x.code)}</code>`;
+    list.append(d);
+  });
+}
+
+function closeSim() {
+  stopLoop();
+  $('#sim').classList.remove('on');
+  document.body.style.overflow = '';
+  sim = null; ended = false; panelOpen = false; paused = false; rafId = 0;
+  $('#feed').innerHTML = '';
+  $('#panel').classList.remove('on');
+  renderPast();
+}
+
+$('#btnStart').onclick = () => startLife(false);
+$('#btnRandom').onclick = () => startLife(true);
+$('#btnPause').onclick = () => {
+  if (!sim) return;
+  paused = !paused;
+  $('#btnPause').textContent = paused ? S('Продолжить', 'Resume') : S('Пауза', 'Pause');
+  lastTs = performance.now();
+};
+$$('.spd').forEach(b => b.onclick = () => {
+  speed = +b.dataset.spd;
+  $$('.spd').forEach(x => x.classList.toggle('on', x === b));
+  lastTs = performance.now();
+});
+$('#btnExit').onclick = closeSim;
+
+$$('#segSex button').forEach(b => b.onclick = () => { ST.sex = b.dataset.v; syncUI(); saveSettings(); });
+$$('#segAge button').forEach(b => b.onclick = () => { ST.ageBand = b.dataset.v; syncUI(); saveSettings(); });
+$$('#segType button').forEach(b => b.onclick = () => { ST.type = b.dataset.v; syncUI(); saveSettings(); });
+$('#selCountry').onchange = e => { ST.country = e.target.value; saveSettings(); };
+$('#selControl').onchange = e => { ST.control = e.target.value; saveSettings(); };
+$('#tgAuto').onchange = e => { ST.auto = e.target.checked; saveSettings(); };
+$('#tgSoft').onchange = e => { ST.soft = e.target.checked; saveSettings(); };
+$('#tgMusic').onchange = e => { ST.music = e.target.checked; saveSettings(); setMusic(ST.music); };
+$('#btnClearLives').onclick = () => { try { localStorage.removeItem(LS_LIVES); } catch (e) {} renderPast(); };
+
+const feedWrap = $('.feedwrap');
+if (feedWrap) feedWrap.addEventListener('scroll', () => {
+  atBottom = feedWrap.scrollTop + feedWrap.clientHeight > feedWrap.scrollHeight - 80;
+});
+
+document.addEventListener('keydown', e => {
+  if (!sim) return;
+  if (e.key === 'Escape') { closeSim(); return; }
+  if (e.key === ' ' && !panelOpen) { e.preventDefault(); $('#btnPause').click(); }
+  if (panelOpen && /^[1-3]$/.test(e.key)) { const b = $$('#panelCard .opt')[+e.key - 1]; if (b) b.click(); }
+});
+
+/* --- тихая музыка (Web Audio, без файлов) --- */
+let pad = null;
+function setMusic(on) {
+  if (on && !pad) {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AC();
+      const master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+      master.gain.linearRampToValueAtTime(.04, ctx.currentTime + 3);
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 720; lp.connect(master);
+      const oscs = [98, 146.83, 196, 293.66].map((f, i) => {
+        const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f;
+        const g = ctx.createGain(); g.gain.value = .11 / (i + 1); o.connect(g); g.connect(lp); o.start(); return o;
+      });
+      const lfo = ctx.createOscillator(); lfo.frequency.value = .04;
+      const lg = ctx.createGain(); lg.gain.value = .011; lfo.connect(lg); lg.connect(master.gain); lfo.start();
+      pad = { ctx, stop() {
+        master.gain.linearRampToValueAtTime(0, ctx.currentTime + .6);
+        setTimeout(() => { oscs.forEach(o => { try { o.stop(); } catch (e) {} }); try { lfo.stop(); ctx.close(); } catch (e) {} }, 800);
+      } };
+      if (ctx.state === 'suspended') ctx.resume();
+    } catch (e) { pad = null; }
+  } else if (!on && pad) { pad.stop(); pad = null; }
+}
+
+/* --- счётчики --- */
+const RATES = [0.34, 0.073, 0.21];
+const cEls = [$('#c1'), $('#c2'), $('#c3')];
+let cStart = 0;
+function counters(ts) {
+  if (!cStart) cStart = ts;
+  const sec = Math.max(0, (ts - cStart) / 1000);
+  for (let i = 0; i < 3; i++) if (cEls[i]) cEls[i].textContent = fmtInt(RATES[i] * sec);
+  requestAnimationFrame(counters);
+}
+
+/* --- язык интерфейса --- */
+const UI = {
+  brand: { ru: 'Один диагноз', en: 'One Diagnosis' },
+  brandSub: { ru: 'диабетическая ретинопатия · v0.1 · 16+', en: 'diabetic retinopathy · v0.1 · 16+' },
+  navStart: { ru: 'Начать', en: 'Start' },
+  navHow: { ru: 'Как это устроено', en: 'How it works' },
+  navStages: { ru: 'Этапы', en: 'Stages' },
+  navHelp: { ru: 'Помощь', en: 'Help' },
+  heroKick: { ru: 'Симуляция одной болезни · реальная статистика · около 15 минут', en: 'A one-disease simulation · real statistics · about 15 minutes' },
+  heroOf: { ru: 'из 4', en: 'in 4' },
+  heroLead: {
+    ru: 'Почти у каждого четвёртого взрослого с диабетом на сетчатке уже есть изменения. У каждого шестнадцатого они угрожают зрению. <b>Диабетическая ретинопатия</b> — главная причина предотвратимой слепоты у людей трудоспособного возраста.',
+    en: 'Nearly one in four adults with diabetes already has changes in the retina. For one in sixteen, they threaten sight. <b>Diabetic retinopathy</b> is the leading cause of preventable blindness in working-age adults.'
+  },
+  heroAfter: {
+    ru: 'Здесь вы получаете диабет по статистике — тип, возраст, страну и контроль сахара — и проживаете его осложнение на сетчатке до конца. С паузами там, где жизнь действительно делает выбор.',
+    en: 'Here you get diabetes by the statistics — type, age, country and glucose control — and live its effect on the retina to the end. With pauses where life actually makes a choice.'
+  },
+  countersAria: { ru: 'Счётчики в реальном времени', en: 'Live counters' },
+  c1label: { ru: 'прирост числа людей с диабетом в мире, пока вы читаете', en: 'the rise in people with diabetes worldwide while you read' },
+  c2label: { ru: 'прирост числа людей с диабетической ретинопатией за это же время', en: 'the rise in people with diabetic retinopathy in the same time' },
+  c3label: { ru: 'смертей, связанных с диабетом, за это же время', en: 'deaths linked to diabetes in the same time' },
+  setupH2: { ru: 'Если бы диабет нашли сейчас', en: 'If the diagnosis came today' },
+  setupSub: { ru: 'Тип, возраст и страну определяет статистика. Вы можете поменять пять вещей — и начать. Дальше всё решит не только выбор, но и доступ к помощи.', en: 'Type, age and country are set by statistics. You can change five things — and begin. After that, not only your choices but access to care will decide.' },
+  sexLabel: { ru: 'Пол', en: 'Sex' },
+  sexF: { ru: 'Женский', en: 'Female' },
+  sexM: { ru: 'Мужской', en: 'Male' },
+  sexR: { ru: 'Случайно', en: 'Random' },
+  ageLabel: { ru: 'Возраст начала диабета', en: 'Age at diabetes onset' },
+  ageStat: { ru: 'По статистике', en: 'By statistics' },
+  ageYoung: { ru: 'Молодой', en: 'Young' },
+  ageOld: { ru: 'Пожилой', en: 'Older' },
+  countryLabel: { ru: 'Страна и доступ к помощи', en: 'Country and access to care' },
+  typeLabel: { ru: 'Тип диабета', en: 'Diabetes type' },
+  type1: { ru: '1 тип', en: 'Type 1' },
+  type2: { ru: '2 тип', en: 'Type 2' },
+  typeRandom: { ru: 'Случайно', en: 'Random' },
+  controlLabel: { ru: 'Исходный контроль сахара', en: 'Baseline glucose control' },
+  tgAuto: { ru: 'Авторежим — просто наблюдать', en: 'Auto mode — just watch' },
+  tgSoft: { ru: 'Убрать тяжёлые сцены', en: 'Soften harsh scenes' },
+  tgMusic: { ru: 'Тихая музыка', en: 'Quiet music' },
+  btnStart: { ru: 'Прожить эту болезнь', en: 'Live this illness' },
+  btnRandom: { ru: 'Случайная жизнь', en: 'Random life' },
+  startMicro: { ru: '5 пауз · ничего не отправляется на сервер · модель, а не прогноз', en: '5 pauses · nothing is sent to a server · a model, not a forecast' },
+  howH2: { ru: 'Как это устроено', en: 'How it works' },
+  howSub: { ru: 'Одна жизнь с одним осложнением. Не игра в выбор — попытка прожить статистику изнутри.', en: 'One life with one complication. Not a game of choices — an attempt to live the statistics from the inside.' },
+  how1t: { ru: 'Болезнь не выбирают', en: 'You do not choose the illness' },
+  how1p: { ru: 'Тип диабета, возраст, страна и то, как долго сахар оставался высоким, — не выбор. Ретинопатия начинается тихо: часто через десять-пятнадцать лет после диагноза, а иногда — уже в момент, когда диабет только нашли.', en: 'Diabetes type, age, country and how long glucose stayed high are not a choice. Retinopathy begins quietly: often ten to fifteen years after diagnosis, and sometimes at the moment diabetes is first found.' },
+  how2t: { ru: 'Пауза', en: 'The pause' },
+  how2p: { ru: 'В пяти местах время останавливается: первые изменения, обследование, лечение, близкие и работа, последний отрезок. Каждый выбор меняет зрение — но не отменяет статистику.', en: 'Time stops in five places: the first changes, the tests, treatment, family and work, the last stretch. Every choice changes sight — but does not cancel the statistics.' },
+  how3t: { ru: 'Рядом идут другие', en: 'Others walk beside you' },
+  how3p: { ru: 'В тот же день такой же диагноз слышат тысячи людей. Четверо из них живут с той же болезнью в других странах — с другим доступом к офтальмологу, лазеру и уколам. Никто из них этого не выбирал.', en: 'On the same day thousands of people hear the same diagnosis. Four of them live with the same disease in other countries — with different access to an ophthalmologist, laser and injections. None of them chose it.' },
+  howP1: { ru: 'Диабетическая ретинопатия — не болезнь глаз в обычном смысле. Это повреждение мелких сосудов сетчатки высоким сахаром. Она годами не даёт симптомов, а когда даёт — часто уже поздно для простого наблюдения. Поэтому статистика здесь зависит не от силы воли, а от того, попал ли человек на осмотр с расширенным зрачком и есть ли в его стране лазер и инъекции.', en: 'Diabetic retinopathy is not an eye disease in the ordinary sense. It is damage to the small vessels of the retina caused by high glucose. For years it causes no symptoms, and when it does, it is often too late for simple observation. So the statistics here depend not on willpower but on whether a person reached an exam with dilated pupils and whether their country has laser and injections.' },
+  howP2: {
+    ru: 'Всё, что происходит, — модель. Она построена на опубликованных оценках, но не предсказывает ничью конкретную жизнь. <em>Здесь нельзя ослепнуть от того, что вы «плохо играли»: можно только увидеть, как статистика распределяет шансы.</em> И одна из самых жестоких её частей: почти 90% случаев тяжёлой потери зрения при диабете предотвратимы — там, где есть скрининг и лечение.',
+    en: 'Everything that happens is a model. It is built on published estimates but does not predict any particular life. <em>Here you cannot go blind because you “played badly”: you can only see how statistics distribute chances.</em> And one of its cruellest parts: almost 90% of cases of severe sight loss in diabetes are preventable — where screening and treatment exist.'
+  },
+  stagesH2: { ru: 'Этапы, через которые проходит сетчатка', en: 'The stages the retina goes through' },
+  stagesSub: { ru: 'Ретинопатия почти никогда не начинается со слепоты. Между первыми изменениями и потерей зрения — годы, в которые можно что-то сделать.', en: 'Retinopathy almost never starts with blindness. Between the first changes and sight loss there are years in which something can be done.' },
+  tblStage: { ru: 'Этап', en: 'Stage' },
+  tblWhat: { ru: 'Что происходит', en: 'What happens' },
+  tblDo: { ru: 'Что обычно делают', en: 'What is usually done' },
+  st1n: { ru: 'Нет изменений', en: 'No changes' },
+  st1w: { ru: 'Сосуды сетчатки целы, симптомов нет.', en: 'The retinal vessels are intact; there are no symptoms.' },
+  st1d: { ru: 'Осмотр раз в 1–2 года; при диабете 2 типа — сразу после диагноза.', en: 'An exam every 1–2 years; with type 2 diabetes, at diagnosis.' },
+  st2n: { ru: 'НПДР, лёгкая', en: 'NPDR, mild' },
+  st2w: { ru: 'Микроаневризмы и единичные мелкие кровоизлияния.', en: 'Microaneurysms and a few small haemorrhages.' },
+  st2d: { ru: 'Контроль сахара и давления, наблюдение.', en: 'Glucose and blood pressure control, observation.' },
+  st3n: { ru: 'НПДР, умеренная', en: 'NPDR, moderate' },
+  st3w: { ru: 'Кровоизлияний и экссудатов больше, сосуды страдают.', en: 'More haemorrhages and exudates; the vessels are suffering.' },
+  st3d: { ru: 'Осмотр каждые 6–12 месяцев.', en: 'An exam every 6–12 months.' },
+  st4n: { ru: 'НПДР, тяжёлая', en: 'NPDR, severe' },
+  st4w: { ru: 'Сосуды близки к пролиферации, риск закрытия просвета.', en: 'The vessels are close to proliferating; risk of closure.' },
+  st4d: { ru: 'Лазер или наблюдение; отдельно лечат отёк в центре.', en: 'Laser or observation; the centre is treated separately.' },
+  st5n: { ru: 'ПДР', en: 'PDR' },
+  st5w: { ru: 'На сетчатке растут новые хрупкие сосуды: риск кровоизлияния и отслойки.', en: 'New fragile vessels grow on the retina: risk of haemorrhage and detachment.' },
+  st5d: { ru: 'Панретинальный лазер, инъекции, витрэктомия.', en: 'Panretinal laser, injections, vitrectomy.' },
+  st6n: { ru: 'ДМО', en: 'DME' },
+  st6w: { ru: 'Отёк в центре сетчатки — там, где чтение, лица и дорога.', en: 'Swelling in the centre of the retina — where reading, faces and the road are.' },
+  st6d: { ru: 'Инъекции анти-VEGF; лазер при некоторых формах.', en: 'Anti-VEGF injections; laser for some forms.' },
+  stagesNote: {
+    ru: '<b>Диабетический макулярный отёк может возникнуть на любой стадии.</b> Зрение падает не от самой ретинопатии, а от отёка, кровоизлияния или отслойки. Именно поэтому осмотр нужен даже тогда, когда «всё видно».',
+    en: '<b>Diabetic macular oedema can appear at any stage.</b> Vision falls not from retinopathy itself but from oedema, haemorrhage or detachment. That is why an exam is needed even when “everything is visible”.'
+  },
+  pastH2: { ru: 'Прожитые здесь жизни', en: 'Lives lived here' },
+  pastSub: { ru: 'Сохраняются только в этом браузере.', en: 'Saved only in this browser.' },
+  pastClear: { ru: 'Очистить', en: 'Clear' },
+  helpH2: { ru: 'Тяжёлые темы', en: 'Hard subjects' },
+  helpSub: { ru: 'Здесь теряют зрение. Так же часто, как в реальной статистике.', en: 'People lose their sight here. As often as in real statistics.' },
+  helpH3: { ru: 'Это может быть тяжело — и это нормально', en: 'This can be hard — and that is normal' },
+  helpP1: { ru: 'В симуляции есть слепота, страх, долги и отчаяние. Сцены не показываются подробно, а флажок «Убрать тяжёлые сцены» смягчает формулировки. Если вам сейчас тяжело, симуляция может подождать.', en: 'The simulation contains blindness, fear, debt and despair. Scenes are not shown in detail, and the “Soften harsh scenes” switch softens the wording. If things are hard for you right now, the simulation can wait.' },
+  helpP2: { ru: 'Потеря зрения — не приговор и не конец: есть реабилитация, тифлотехника и сообщества людей, которые через это прошли. Но если вы думаете о том, чтобы причинить себе вред, или просто больше не справляетесь, — это не то, что нужно переживать в одиночку.', en: 'Losing sight is not a verdict or an end: there is rehabilitation, assistive technology and communities of people who have been through it. But if you are thinking of harming yourself, or simply cannot cope any more, this is not something to carry alone.' },
+  helpL1: { ru: '<b>Россия:</b> 8-800-2000-122 — бесплатно, круглосуточно', en: '<b>Russia:</b> 8-800-2000-122 — free, 24/7' },
+  helpL2: { ru: '<b>Экстренно:</b> 112', en: '<b>Emergency:</b> 112' },
+  helpL3: { ru: '<b>Мир:</b> findahelpline.com — линии помощи в 130+ странах', en: '<b>Worldwide:</b> findahelpline.com — helplines in 130+ countries' },
+  helpL4: { ru: '<b>Не один:</b> скажите вслух близкому человеку', en: '<b>Not alone:</b> say it out loud to someone close' },
+  footP: { ru: '«Один диагноз: ретинопатия» — симуляция одного осложнения диабета. Цифры: IDF Diabetes Atlas 2021, метаанализ распространённости ДР (Ophthalmology, 2021), GBD / Vision Loss Expert Group, AAO Preferred Practice Pattern 2024, UKPDS. Модель течения болезни — упрощение, а не прогноз.', en: '“One Diagnosis: retinopathy” is a simulation of one complication of diabetes. Figures: IDF Diabetes Atlas 2021, a meta-analysis of diabetic retinopathy prevalence (Ophthalmology, 2021), GBD / Vision Loss Expert Group, AAO Preferred Practice Pattern 2024, UKPDS. The disease model is a simplification, not a forecast.' },
+  footNoServer: { ru: 'Ничего не отправляется на сервер', en: 'Nothing is sent to a server' },
+  simAria: { ru: 'Симуляция диабетической ретинопатии', en: 'Diabetic retinopathy simulation' },
+  meterVision: { ru: 'Зрение', en: 'Vision' },
+  meterControl: { ru: 'Контроль', en: 'Control' },
+  meterLife: { ru: 'Жизнь', en: 'Life' },
+  exitBtn: { ru: 'Выйти', en: 'Exit' }
+};
+
+function applyLang() {
+  document.documentElement.lang = L;
+  document.title = S('Диабетическая ретинопатия — симуляция одной болезни', 'Diabetic retinopathy — a one-disease simulation');
+  const md = document.querySelector('meta[name="description"]');
+  if (md) md.setAttribute('content', S('Симуляция одной болезни: диабетическая ретинопатия. Диабет по статистике, пять пауз, зрение, лазер и инъекции. Данные IDF, GBD и AAO.', 'A one-disease simulation: diabetic retinopathy. Diabetes by statistics, five pauses, sight, laser and injections. Data from IDF, GBD and AAO.'));
+  $$('[data-i18n]').forEach(el => { const v = UI[el.dataset.i18n]; if (v) el.textContent = v[L]; });
+  $$('[data-i18n-html]').forEach(el => { const v = UI[el.dataset.i18nHtml]; if (v) el.innerHTML = v[L]; });
+  $$('[data-i18n-aria]').forEach(el => { const v = UI[el.dataset.i18nAria]; if (v) el.setAttribute('aria-label', v[L]); });
+  $$('#langSwitch button').forEach(b => b.classList.toggle('on', b.dataset.lang === L));
+  rebuildSelects();
+  renderPast();
+  if (sim) {
+    $('#simDisease').textContent = dname();
+    $('#simPerson').textContent = `${sexWord(sim.sex)} · ${S('диабет в', 'diabetes at')} ${sim.onset} · ${typeShort(sim.type)} · ${countryName(sim.country)} · ${code}`;
+    $('#btnPause').textContent = paused ? S('Продолжить', 'Resume') : S('Пауза', 'Pause');
+    paint();
+  }
+}
+
+function setLang(next) {
+  if ((next !== 'ru' && next !== 'en') || next === L) return;
+  L = next;
+  try { localStorage.setItem(LS_LANG, L); } catch (e) {}
+  applyLang();
+}
+
+$$('#langSwitch button').forEach(b => b.onclick = () => setLang(b.dataset.lang));
+
+/* --- инициализация --- */
+syncUI();
+applyLang();
+if (ST.music) setMusic(true);
+requestAnimationFrame(counters);
+</script>
+</body>
+</html>
