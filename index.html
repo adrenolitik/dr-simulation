@@ -739,12 +739,12 @@ class Life {
     if (this.type === 't1') {
       return S(
         `Вам ${yrs(this.onset)}. Неделю вы пьёте воду стаканами и худеете без причины. Анализ крови: сахар 19. Врач говорит: «Диабет первого типа. Инсулин — каждый день, пожизненно».`,
-        `You are ${yrs(this.onset)}. For a week you have been drinking glass after glass and losing weight for no reason. A blood test: glucose 19. The doctor says: “Type 1 diabetes. Insulin — every day, for life.”`
+        `You are ${this.onset} years old. For a week you have been drinking glass after glass and losing weight for no reason. A blood test: glucose 19. The doctor says: “Type 1 diabetes. Insulin — every day, for life.”`
       );
     }
     return S(
       `Вам ${yrs(this.onset)}. Сахар на диспансеризации — 11,8. Врач говорит: «Диабет второго типа. Начнём с таблеток и диеты», — и вы решаете, что это не про глаза.`,
-      `You are ${yrs(this.onset)}. A routine blood test shows glucose 11.8. The doctor says: “Type 2 diabetes. We will start with tablets and diet” — and you decide this has nothing to do with your eyes.`
+      `You are ${this.onset} years old. A routine blood test shows glucose 11.8. The doctor says: “Type 2 diabetes. We will start with tablets and diet” — and you decide this has nothing to do with your eyes.`
     );
   }
 
@@ -875,7 +875,7 @@ class Life {
     if (s.vision < 55 && this.rng() < .35) this.push('calm', this.take(gen().sight));
     else if (this.rng() < .6) this.push('calm', this.take([...gen().calm, this.beatLine()]));
 
-    if (!s.blind && s.vision <= 5) {
+    if (!s.blind && s.vision < 6) {
       s.blind = true;
       this.blindAt = s.t;
       this.push('big', S(this.soft ? 'Вы больше не видите лиц. Мир стал другим.' : 'Вы больше не видите лиц. Только свет и тени, если повезёт.', this.soft ? 'You no longer see faces. The world has become different.' : 'You no longer see faces. Only light and shadows, if you are lucky.'));
@@ -893,15 +893,20 @@ class Life {
     this.update();
   }
 
-  advance(dt) {
-    if (this.done) return;
+  autoResolve() {
     let guard = 0;
     while (this.auto && this.pending && this.s.t >= this.pending.t - 1e-9 && guard++ < 8) {
       this.resolve(this.pending.id, this.policy(this.pending.id));
     }
+  }
+
+  advance(dt) {
+    if (this.done) return;
+    this.autoResolve();
     if (!this.auto && this.pending && this.s.t >= this.pending.t - 1e-9) return;
     this.s.t += dt;
     this.update();
+    this.autoResolve();
     while (this.s.t + 1e-9 >= this.nextYear) {
       this.nextYear += 1;
       this.yearly();
@@ -1043,9 +1048,13 @@ function decisionDef(life, id) {
 
 Life.prototype.resolve = function (id, idx) {
   const s = this.s;
-  const def = decisionDef(this, id);
-  const opt = def.options[idx] || def.options[0];
-  this.choices.push({ q: def.title, a: opt.label });
+  const prevL = L;
+  L = 'ru'; const ruDef = decisionDef(this, id); const ruOpt = ruDef.options[idx] || ruDef.options[0];
+  L = 'en'; const enDef = decisionDef(this, id); const enOpt = enDef.options[idx] || enDef.options[0];
+  L = prevL;
+  const def = L === 'en' ? enDef : ruDef;
+  const opt = L === 'en' ? enOpt : ruOpt;
+  this.choices.push({ q: ruDef.title, qEn: enDef.title, a: ruOpt.label, aEn: enOpt.label });
   this.queue = this.queue.filter(q => q.id !== id);
   this.pending = this.queue[0] || null;
   if (this.auto) this.push('note', '— ' + opt.label);
@@ -1216,15 +1225,28 @@ Life.prototype.resolve = function (id, idx) {
 
 function runLifeOut(o) {
   const l = new Life(Object.assign({}, o, { auto: true }));
+  l.start();
   let guard = 0;
   while (!l.done && guard++ < 3000) l.advance(.35);
   if (!l.done) l.finish();
-  return { country: l.country, sex: l.sex, onset: l.drAge, endAge: l.endAge, years: Math.round(l.s.t), kind: l.outcomeKind, vision: l.s.vision };
+  return { country: l.country, sex: l.sex, onset: l.drAge, endAge: l.endAge, years: Math.round(l.s.t), kind: l.outcomeKind, vision: l.s.vision, blindAge: l.blindAt == null ? null : Math.round(l.drAge + l.blindAt) };
 }
 
 const LS_LIVES = 'dr.lives.v1', LS_SET = 'dr.settings.v1';
 const ST = { sex: 'random', ageBand: 'stat', country: 'ru', type: 'random', control: 'stat', auto: false, soft: false, music: false };
-try { const raw = localStorage.getItem(LS_SET); if (raw) Object.assign(ST, JSON.parse(raw)); } catch (e) {}
+try {
+  const raw = localStorage.getItem(LS_SET);
+  const saved = raw ? JSON.parse(raw) : null;
+  if (saved && typeof saved === 'object') {
+    ['sex', 'ageBand', 'country', 'type', 'control', 'auto', 'soft', 'music'].forEach(k => { if (Object.prototype.hasOwnProperty.call(saved, k)) ST[k] = saved[k]; });
+  }
+} catch (e) {}
+if (!['female', 'male', 'random'].includes(ST.sex)) ST.sex = 'random';
+if (!['stat', 'young', 'old'].includes(ST.ageBand)) ST.ageBand = 'stat';
+if (!COUNTRIES.some(c => c.id === ST.country)) ST.country = 'ru';
+if (!['t1', 't2', 'random'].includes(ST.type)) ST.type = 'random';
+if (!['stat', 'good', 'poor'].includes(ST.control)) ST.control = 'stat';
+['auto', 'soft', 'music'].forEach(k => { ST[k] = ST[k] === true; });
 function saveSettings() { try { localStorage.setItem(LS_SET, JSON.stringify(ST)); } catch (e) {} }
 
 let sim = null, code = '0000', feedIdx = 0, paused = true, panelOpen = true, ended = false;
@@ -1293,6 +1315,12 @@ function startLife(allRandom) {
   $('#sim').classList.add('on');
   document.body.style.overflow = 'hidden';
 
+  renderIntro(true);
+}
+
+function renderIntro(focus) {
+  if (!sim) return;
+  const country = sim.country;
   $('#panelCard').innerHTML = `
     <p class="kick">${S('Жизнь', 'Life')} ${code} · ${esc(dgroup())}</p>
     <h3>${esc(dname())}</h3>
@@ -1302,8 +1330,17 @@ function startLife(allRandom) {
     <div class="opts"><button class="opt" id="btnBegin"><span class="k">→</span><span class="tx"><strong>${S('Начать', 'Begin')}</strong><em>${S('Около 15 минут, если не ускорять.', 'About 15 minutes if you do not speed up.')}</em></span></button></div>
     <p class="pn">${S('Внизу — кнопки паузы и скорости. Каждое решение меняет то, что будет дальше.', 'The pause and speed buttons are below. Every decision changes what comes next.')}</p>`;
   $('#panel').classList.add('on');
-  $('#btnBegin').onclick = begin;
-  setTimeout(() => { const b = $('#btnBegin'); if (b) b.focus(); }, 80);
+  $('#panel').scrollTop = 0;
+  const b = $('#btnBegin');
+  if (b) {
+    b.onclick = begin;
+    if (focus) setTimeout(() => { const x = $('#btnBegin'); if (x) x.focus(); }, 80);
+  }
+}
+
+function syncPauseBtn() {
+  const b = $('#btnPause');
+  if (b) b.textContent = paused ? S('Продолжить', 'Resume') : S('Пауза', 'Pause');
 }
 
 function begin() {
@@ -1311,6 +1348,7 @@ function begin() {
   panelOpen = false; paused = false;
   sim.start();
   lastTs = performance.now();
+  syncPauseBtn();
   if (!rafId) rafId = requestAnimationFrame(loop);
   paint();
 }
@@ -1326,7 +1364,18 @@ function loop(ts) {
   sim.advance(dt * speed * RATE);
   paint();
   if (sim.done) { showEnd(); return; }
-  if (sim.pending && sim.s.t >= sim.pending.t - 1e-9) { openDecision(); return; }
+  if (sim.pending && sim.s.t >= sim.pending.t - 1e-9) {
+    if (sim.auto) {
+      sim.resolve(sim.pending.id, sim.policy(sim.pending.id));
+      paint();
+      if (sim.done) { showEnd(); return; }
+      rafId = requestAnimationFrame(loop);
+      return;
+    }
+    rafId = 0;
+    openDecision();
+    return;
+  }
   rafId = requestAnimationFrame(loop);
 }
 
@@ -1366,9 +1415,10 @@ function paint() {
 }
 
 function openDecision() {
-  if (!sim || !sim.pending) return;
+  if (!sim || !sim.pending || sim.auto) return;
   const def = decisionDef(sim, sim.pending.id);
   panelOpen = true; paused = true;
+  syncPauseBtn();
   $('#panelCard').innerHTML = `
     <p class="kick">${esc(def.kick)}</p>
     <h3>${esc(def.title)}</h3>
@@ -1385,7 +1435,7 @@ function openDecision() {
     box.append(b);
   });
   $('#panel').classList.add('on');
-  $('#panelCard').scrollTop = 0;
+  $('#panel').scrollTop = 0;
   paint();
   setTimeout(() => { const f = $('#panelCard .opt'); if (f) f.focus(); }, 60);
 }
@@ -1397,16 +1447,18 @@ function choose(i) {
   panelOpen = false;
   sim.resolve(id, i);
   paused = false;
+  syncPauseBtn();
   lastTs = performance.now();
   paint();
   if (sim.done) { showEnd(); return; }
   if (sim.pending && sim.s.t >= sim.pending.t - 1e-9) { openDecision(); return; }
-  if (!rafId) rafId = requestAnimationFrame(loop);
+  stopLoop();
+  rafId = requestAnimationFrame(loop);
 }
 
 function shadowLabel(x) {
   const f = x.sex === 'female';
-  if (x.kind === 'blind') return S(`${f ? 'Ослепла' : 'Ослеп'} в ${x.endAge}`, `Went blind at ${x.endAge}`);
+  if (x.kind === 'blind') { const at = x.blindAge == null ? x.endAge : x.blindAge; return S(`${f ? 'Ослепла' : 'Ослеп'} в ${at}`, `Went blind at ${at}`); }
   if (x.kind === 'kept') return S('Зрение сохранилось', 'Sight preserved');
   return S(`Видит ${acuity(x.vision)}`, `Sees ${acuity(x.vision)}`);
 }
@@ -1430,20 +1482,32 @@ function showEnd() {
   if (!sim || ended) return;
   ended = true; stopLoop(); paused = true; panelOpen = false;
   $('#panel').classList.remove('on');
+  syncPauseBtn();
+  saveLife('');
+  renderEnd(true);
+  renderPast();
+}
+
+function renderEnd(scroll) {
+  if (!sim) return;
   const l = sim, v = l.s.vision, kind = l.outcomeKind, age = l.endAge;
+  const blindAge = l.blindAt == null ? age : Math.round(l.drAge + l.blindAt);
   const sh = shadows();
+  const prevWords = $('#wordsBox') ? $('#wordsBox').value : '';
+  const oldCard = $('#endCard');
+  if (oldCard) oldCard.remove();
 
   let html = `<div class="end" id="endCard">
     <p class="kick">${S('Жизнь', 'Life')} ${code} · ${esc(dname())} · ${esc(countryName(l.country))} · ${sexWord(l.sex)}</p>`;
-  if (kind === 'blind') html += `<h2>${l.soft ? S('Вы потеряли зрение в', 'You lost your sight at') : S('Вы ослепли в', 'You went blind at')} <em>${age}</em></h2>`;
+  if (kind === 'blind') html += `<h2>${l.soft ? S('Вы потеряли зрение в', 'You lost your sight at') : S('Вы ослепли в', 'You went blind at')} <em>${blindAge}</em></h2>`;
   else if (kind === 'kept') html += `<h2>${S('Вы всё ещё <em>видите</em>', 'You can still <em>see</em>')}</h2>`;
   else html += `<h2>${S('Вы видите на', 'You see')} <em>${acuity(v)}</em></h2>`;
   const typeName = typeWord(l.type);
-  html += `<p class="cause">${typeName}. ${esc(l.stageName)}${l.s.dme ? S(', диабетический макулярный отёк', ', diabetic macular oedema') : ''}. ${S('С диагнозом ретинопатии —', 'With the retinopathy diagnosis —')} ${yrs(l.s.t)}${kind === 'blind' ? S(`, слепота пришла в ${Math.round(l.drAge + l.blindAt)}`, `, blindness came at ${Math.round(l.drAge + l.blindAt)}`) : ''}. ${l.soft ? '' : S('Это была не вся ваша жизнь.', 'This was not your whole life.')}</p>`;
+  html += `<p class="cause">${typeName}. ${esc(l.stageName)}${l.s.dme ? S(', диабетический макулярный отёк', ', diabetic macular oedema') : ''}. ${S('С диагнозом ретинопатии —', 'With the retinopathy diagnosis —')} ${yrs(l.s.t)}${kind === 'blind' ? S(`, слепота пришла в ${blindAge}`, `, blindness came at ${blindAge}`) : ''}. ${l.soft ? '' : S('Это была не вся ваша жизнь.', 'This was not your whole life.')}</p>`;
 
   html += `<div class="stat-row">
-      <div><b>${age}</b><span>${S('лет в конце', 'years at the end')}</span></div>
-      <div><b>${Math.round(l.s.t)}</b><span>${S('лет с диагнозом', 'years with the diagnosis')}</span></div>
+      <div><b>${age}</b><span>${ageWord(age)} ${S('в конце', 'at the end')}</span></div>
+      <div><b>${Math.round(l.s.t)}</b><span>${ageWord(l.s.t)} ${S('с диагнозом', 'with the diagnosis')}</span></div>
       <div><b>${l.choices.length}</b><span>${S('пауз и решений', 'pauses and decisions')}</span></div>
     </div>`;
 
@@ -1460,7 +1524,11 @@ function showEnd() {
   html += `</div>`;
 
   html += `<h4>${S('Ваши решения', 'Your decisions')}</h4><div class="recap">`;
-  l.choices.forEach(c => { html += `<div><span>${esc(c.q)}</span><b>${esc(c.a)}</b></div>`; });
+  l.choices.forEach(c => {
+    const q = L === 'en' ? (c.qEn || c.q) : c.q;
+    const a = L === 'en' ? (c.aEn || c.a) : c.a;
+    html += `<div><span>${esc(q)}</span><b>${esc(a)}</b></div>`;
+  });
   html += `</div>`;
 
   html += `<h4>${S('Что здесь было настоящим', 'What was real here')}</h4><div class="facts">`;
@@ -1482,20 +1550,22 @@ function showEnd() {
 
   $('#feed').insertAdjacentHTML('beforeend', html);
   const card = $('#endCard');
-  card.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  if (card && scroll) card.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  const wb = $('#wordsBox');
+  if (wb) wb.value = prevWords;
 
   $('#btnAgain').onclick = () => { closeSim(); startLife(true); };
   $('#btnHome').onclick = closeSim;
   $('#btnCopy').onclick = async () => {
-    const txt = S(`${dname()}. ${kind === 'blind' ? 'Слепота в ' + age + '.' : 'Зрение ' + acuity(v) + ' в ' + age + '.'} С диагнозом ${Math.round(l.s.t)} лет. ${countryName(l.country)}. Симуляция «Один диагноз: ретинопатия».`, `${dname()}. ${kind === 'blind' ? 'Blind at ' + age + '.' : 'Sight ' + acuity(v) + ' at ' + age + '.'} ${Math.round(l.s.t)} years with the diagnosis. ${countryName(l.country)}. “One Diagnosis: retinopathy” simulation.`);
-    try { await navigator.clipboard.writeText(txt); $('#btnCopy').textContent = S('Скопировано', 'Copied'); } catch (e) {}
+    const txt = S(`${dname()}. ${kind === 'blind' ? 'Слепота в ' + blindAge + '.' : 'Зрение ' + acuity(v) + ' в ' + age + '.'} С диагнозом ${yrs(Math.round(l.s.t))}. ${countryName(l.country)}. Симуляция «Один диагноз: ретинопатия».`, `${dname()}. ${kind === 'blind' ? 'Blind at ' + blindAge + '.' : 'Sight ' + acuity(v) + ' at ' + age + '.'} ${yrs(Math.round(l.s.t))} with the diagnosis. ${countryName(l.country)}. “One Diagnosis: retinopathy” simulation.`);
+    const btn = $('#btnCopy');
+    const original = btn ? btn.textContent : '';
+    try { await navigator.clipboard.writeText(txt); if (btn) btn.textContent = S('Скопировано', 'Copied'); }
+    catch (e) { if (btn) btn.textContent = S('Не удалось скопировать', 'Could not copy'); }
+    setTimeout(() => { const x = $('#btnCopy'); if (x) x.textContent = original; }, 1800);
   };
-  $('#wordsBox').addEventListener('change', e => {
-    const v2 = e.target.value.trim();
-    if (v2) { saveLife(v2); renderPast(); }
-  });
-  saveLife('');
-  renderPast();
+  $('#wordsBox').addEventListener('input', e => saveLife(e.target.value.trim()));
+  $('#wordsBox').addEventListener('change', e => { saveLife(e.target.value.trim()); renderPast(); });
 }
 
 function saveLife(words) {
@@ -1503,6 +1573,7 @@ function saveLife(words) {
   let arr = [];
   try { arr = JSON.parse(localStorage.getItem(LS_LIVES) || '[]'); } catch (e) {}
   const entry = {
+    id: l.seed,
     code,
     countryId: l.country.id,
     country: l.country.name,
@@ -1514,8 +1585,9 @@ function saveLife(words) {
     words: words || '',
     date: Date.now()
   };
-  const i = arr.findIndex(x => x.code === code && x.date === entry.date);
-  if (i < 0) arr.unshift(entry); else arr[i] = entry;
+  const i = arr.findIndex(x => x.id != null ? x.id === entry.id : x.code === code);
+  if (i < 0) arr.unshift(entry);
+  else arr[i] = Object.assign({}, arr[i], { id: entry.id, words: entry.words, kind: entry.kind, vision: entry.vision });
   try { localStorage.setItem(LS_LIVES, JSON.stringify(arr.slice(0, 24))); } catch (e) {}
 }
 
@@ -1551,7 +1623,7 @@ $('#btnRandom').onclick = () => startLife(true);
 $('#btnPause').onclick = () => {
   if (!sim) return;
   paused = !paused;
-  $('#btnPause').textContent = paused ? S('Продолжить', 'Resume') : S('Пауза', 'Pause');
+  syncPauseBtn();
   lastTs = performance.now();
 };
 $$('.spd').forEach(b => b.onclick = () => {
@@ -1732,14 +1804,25 @@ function applyLang() {
   $$('[data-i18n]').forEach(el => { const v = UI[el.dataset.i18n]; if (v) el.textContent = v[L]; });
   $$('[data-i18n-html]').forEach(el => { const v = UI[el.dataset.i18nHtml]; if (v) el.innerHTML = v[L]; });
   $$('[data-i18n-aria]').forEach(el => { const v = UI[el.dataset.i18nAria]; if (v) el.setAttribute('aria-label', v[L]); });
-  $$('#langSwitch button').forEach(b => b.classList.toggle('on', b.dataset.lang === L));
+  $$('#langSwitch button').forEach(b => {
+    const on = b.dataset.lang === L;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
   rebuildSelects();
   renderPast();
   if (sim) {
     $('#simDisease').textContent = dname();
     $('#simPerson').textContent = `${sexWord(sim.sex)} · ${S('диабет в', 'diabetes at')} ${sim.onset} · ${typeShort(sim.type)} · ${countryName(sim.country)} · ${code}`;
-    $('#btnPause').textContent = paused ? S('Продолжить', 'Resume') : S('Пауза', 'Pause');
+    $('#scrubL').textContent = S('ДР в', 'DR at') + ' ' + sim.drAge;
+    syncPauseBtn();
     paint();
+    if (ended) {
+      renderEnd(false);
+    } else if (panelOpen) {
+      if ($('#btnBegin')) renderIntro(false);
+      else if (sim.pending) openDecision();
+    }
   }
 }
 
